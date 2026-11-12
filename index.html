@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Davul Antrenörü</title>
+<style>
+:root{--bg:#f6f6f4;--fg:#1c1c1a;--card:#fff;--ac:#d9480f;--mut:#777;--bd:#ddd}
+@media(prefers-color-scheme:dark){:root{--bg:#161615;--fg:#eee;--card:#222221;--mut:#999;--bd:#3a3a38}}
+*{box-sizing:border-box}
+body{margin:0;padding:12px;background:var(--bg);color:var(--fg);font:16px system-ui,sans-serif;max-width:640px;margin:auto}
+h1{font-size:20px;margin:6px 0 12px}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:12px;margin-bottom:12px}
+input[type=text],input[type=url]{width:100%;padding:12px;border:1px solid var(--bd);border-radius:8px;background:var(--bg);color:var(--fg);font-size:16px;margin-bottom:8px}
+button{padding:12px 14px;border:1px solid var(--bd);border-radius:8px;background:var(--card);color:var(--fg);font-size:15px;min-height:44px}
+button.p{background:var(--ac);color:#fff;border-color:var(--ac)}
+button.on{background:var(--ac);color:#fff;border-color:var(--ac)}
+.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.stem{display:flex;align-items:center;gap:8px;padding:8px 0;border-top:1px solid var(--bd)}
+.stem:first-child{border-top:0}
+.stem b{width:84px;font-size:14px}
+.stem input[type=range]{flex:1}
+input[type=range]{width:100%;accent-color:var(--ac)}
+small,#st{color:var(--mut)}
+details summary{cursor:pointer;color:var(--mut);margin-bottom:6px}
+</style>
+</head>
+<body>
+<h1>🥁 Davul Antrenörü</h1>
+
+<div class="card">
+  <details id="cfg"><summary>Sunucu adresi (server.py)</summary>
+    <input type="url" id="srv" placeholder="https://xxxx.trycloudflare.com">
+  </details>
+  <input type="url" id="yt" placeholder="YouTube linkini yapıştır">
+  <div class="row">
+    <button class="p" id="go">Ayrıştır</button>
+    <button id="pick">Hazır stem dosyaları yükle</button>
+    <input type="file" id="files" accept="audio/*" multiple hidden>
+  </div>
+  <div id="st"></div>
+</div>
+
+<div class="card" id="metro">
+  <div class="row" style="margin-bottom:8px">
+    <b>Metronom</b>
+    <button id="mm">−</button>
+    <input type="number" id="bpm" value="100" min="30" max="260" style="width:76px;padding:10px;font-size:18px;text-align:center;border:1px solid var(--bd);border-radius:8px;background:var(--bg);color:var(--fg)">
+    <button id="mp">+</button>
+    <span>BPM</span>
+    <button id="tap">Tap</button>
+    <button class="p" id="mgo" style="margin-left:auto">▶ Başlat</button>
+  </div>
+  <input type="range" id="bpmr" min="30" max="260" value="100">
+  <div class="row" style="margin-top:8px">
+    <span>Vuruş</span>
+    <select id="mbeats" style="padding:10px;border-radius:8px;border:1px solid var(--bd);background:var(--bg);color:var(--fg)"><option>4</option><option>3</option><option>2</option><option>6</option></select>
+    <span style="margin-left:8px">Ses</span>
+    <input type="range" id="mvol" min="0.05" max="1" step="0.05" value="0.6" style="flex:1">
+  </div>
+</div>
+
+<div class="card" id="player" hidden>
+  <div class="row" style="margin-bottom:8px">
+    <button class="p" id="play">▶ Oynat</button>
+    <button id="back">−5sn</button>
+    <button id="fwd">+5sn</button>
+    <span id="time" style="margin-left:auto">0:00</span>
+  </div>
+  <input type="range" id="seek" min="0" max="1000" value="0">
+
+  <div class="row" style="margin:10px 0">
+    <span>Hız</span>
+    <input type="range" id="rate" min="0.5" max="1.25" step="0.05" value="1" style="flex:1">
+    <b id="rv">1.00x</b>
+  </div>
+
+  <div class="row" style="margin-bottom:10px">
+    <button id="la">A noktası</button>
+    <button id="lb">B noktası</button>
+    <button id="lc">Döngüyü sil</button>
+    <small id="ls"></small>
+  </div>
+
+  <div class="row" style="margin-bottom:6px">
+    <button id="nodrum">Davulsuz çal (üstüne çal)</button>
+    <button id="onlydrum">Sadece davul</button>
+    <button id="all">Hepsi</button>
+  </div>
+  <div id="mix"></div>
+</div>
+
+<script>
+const $=id=>document.getElementById(id);
+const AC=new (window.AudioContext||window.webkitAudioContext)();
+const NAMES={drums:'🥁 Davul',bass:'Bas',vocals:'Vokal',guitar:'Gitar',piano:'Piyano',other:'Diğer'};
+const ORDER=['drums','bass','vocals','guitar','piano','other'];
+let stems={},master=null,A=null,B=null,timer=null;
+try{$('srv').value=localStorage.getItem('srv')||''}catch(e){}
+
+const fmt=s=>Math.floor(s/60)+':'+String(Math.floor(s%60)).padStart(2,'0');
+const all=()=>Object.values(stems).map(s=>s.el);
+
+function applyGains(){
+  const solo=Object.values(stems).some(s=>s.solo);
+  for(const s of Object.values(stems)){
+    const aud=!s.mute&&(!solo||s.solo);
+    s.g.gain.value=aud?s.vol:0;
+    s.mb.classList.toggle('on',s.mute);
+    s.sb.classList.toggle('on',s.solo);
+  }
+}
+
+function build(map){
+  all().forEach(e=>{e.pause();e.src=''});
+  stems={};$('mix').innerHTML='';
+  const names=Object.keys(map).sort((a,b)=>(ORDER.indexOf(a)+99)%99-(ORDER.indexOf(b)+99)%99);
+  for(const n of names){
+    const el=new Audio();
+    el.crossOrigin='anonymous';el.preload='auto';el.src=map[n];
+    el.preservesPitch=true;el.webkitPreservesPitch=true;
+    const g=AC.createGain();
+    AC.createMediaElementSource(el).connect(g).connect(AC.destination);
+    const row=document.createElement('div');row.className='stem';
+    row.innerHTML=`<b>${NAMES[n]||n}</b><button>M</button><button>S</button><input type="range" min="0" max="1" step="0.01" value="1">`;
+    const [mb,sb]=row.querySelectorAll('button'),vr=row.querySelector('input');
+    const s={el,g,mute:false,solo:false,vol:1,mb,sb};
+    mb.onclick=()=>{s.mute=!s.mute;applyGains()};
+    sb.onclick=()=>{s.solo=!s.solo;applyGains()};
+    vr.oninput=()=>{s.vol=+vr.value;applyGains()};
+    stems[n]=s;$('mix').appendChild(row);
+  }
+  master=(stems.drums||Object.values(stems)[0]).el;
+  A=B=null;$('ls').textContent='';
+  $('player').hidden=false;applyGains();
+  clearInterval(timer);timer=setInterval(tick,200);
+}
+
+function tick(){
+  if(!master)return;
+  const t=master.currentTime,d=master.duration||0;
+  if(B!=null&&t>=B){seekAll(A??0)}
+  if(!master.paused)for(const e of all())if(e!==master&&Math.abs(e.currentTime-master.currentTime)>0.08)e.currentTime=master.currentTime;
+  if(!seeking)$('seek').value=d?t/d*1000:0;
+  $('time').textContent=fmt(t)+' / '+fmt(d);
+}
+function seekAll(t){all().forEach(e=>e.currentTime=Math.max(0,t))}
+let seeking=false;
+$('seek').onpointerdown=()=>seeking=true;
+$('seek').onpointerup=()=>seeking=false;
+$('seek').oninput=e=>seekAll(e.target.value/1000*(master.duration||0));
+
+$('play').onclick=async()=>{
+  await AC.resume();
+  if(master.paused){all().forEach(e=>e.play());$('play').textContent='⏸ Duraklat'}
+  else{all().forEach(e=>e.pause());$('play').textContent='▶ Oynat'}
+};
+$('back').onclick=()=>seekAll(master.currentTime-5);
+$('fwd').onclick=()=>seekAll(master.currentTime+5);
+$('rate').oninput=e=>{const r=+e.target.value;all().forEach(x=>x.playbackRate=r);$('rv').textContent=r.toFixed(2)+'x'};
+const ls=()=>$('ls').textContent=(A!=null?'A '+fmt(A):'')+(B!=null?'  B '+fmt(B):'');
+$('la').onclick=()=>{A=master.currentTime;ls()};
+$('lb').onclick=()=>{B=master.currentTime;if(A==null)A=0;ls()};
+$('lc').onclick=()=>{A=B=null;ls()};
+$('nodrum').onclick=()=>{for(const [n,s] of Object.entries(stems)){s.solo=false;s.mute=n==='drums'}applyGains()};
+$('onlydrum').onclick=()=>{for(const [n,s] of Object.entries(stems)){s.solo=false;s.mute=n!=='drums'}applyGains()};
+$('all').onclick=()=>{for(const s of Object.values(stems)){s.solo=false;s.mute=false}applyGains()};
+
+// metronom
+let mOn=false,mBeat=0,mNext=0,mTimer=null,taps=[];
+const getBpm=()=>Math.min(260,Math.max(30,+$('bpm').value||100));
+function setBpm(v){v=Math.min(260,Math.max(30,Math.round(v)));$('bpm').value=v;$('bpmr').value=v}
+function click(t,acc){
+  const o=AC.createOscillator(),g=AC.createGain(),v=+$('mvol').value;
+  o.frequency.value=acc?1600:1000;
+  g.gain.setValueAtTime(0.0001,t);
+  g.gain.exponentialRampToValueAtTime(v,t+0.002);
+  g.gain.exponentialRampToValueAtTime(0.0001,t+0.05);
+  o.connect(g).connect(AC.destination);o.start(t);o.stop(t+0.06);
+}
+function sched(){
+  while(mNext<AC.currentTime+0.15){
+    click(mNext,mBeat%(+$('mbeats').value)===0);
+    mBeat++;mNext+=60/getBpm();
+  }
+}
+$('mgo').onclick=async()=>{
+  await AC.resume();
+  if(!mOn){mOn=true;mBeat=0;mNext=AC.currentTime+0.05;mTimer=setInterval(sched,25);$('mgo').textContent='⏸ Durdur'}
+  else{mOn=false;clearInterval(mTimer);$('mgo').textContent='▶ Başlat'}
+};
+$('bpmr').oninput=e=>setBpm(+e.target.value);
+$('bpm').onchange=()=>setBpm(getBpm());
+$('mm').onclick=()=>setBpm(getBpm()-1);
+$('mp').onclick=()=>setBpm(getBpm()+1);
+$('tap').onclick=()=>{
+  const n=performance.now();
+  if(taps.length&&n-taps[taps.length-1]>2000)taps=[];
+  taps.push(n);if(taps.length>6)taps.shift();
+  if(taps.length>1)setBpm(60000/((taps[taps.length-1]-taps[0])/(taps.length-1)));
+};
+
+// hazır stem dosyaları (dosya adı: drums.mp3, bass.mp3, vocals.mp3 ...)
+$('pick').onclick=()=>$('files').click();
+$('files').onchange=e=>{
+  const map={};
+  [...e.target.files].forEach((f,i)=>{
+    const k=Object.keys(NAMES).find(n=>f.name.toLowerCase().includes(n))||('parça'+(i+1));
+    map[k]=URL.createObjectURL(f);
+  });
+  if(Object.keys(map).length)build(map);
+};
+
+// YouTube -> sunucu
+$('go').onclick=async()=>{
+  let srv=$('srv').value.trim().replace(/\/$/,''),url=$('yt').value.trim();
+  if(!srv){$('cfg').open=true;$('st').textContent='Önce sunucu adresini gir.';return}
+  if(!url){$('st').textContent='YouTube linki gir.';return}
+  try{localStorage.setItem('srv',srv)}catch(e){}
+  $('go').disabled=true;$('st').textContent='Gönderiliyor...';
+  try{
+    const {job}=await (await fetch(srv+'/separate',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({url})})).json();
+    while(true){
+      await new Promise(r=>setTimeout(r,3000));
+      const j=await (await fetch(srv+'/status/'+job)).json();
+      if(j.state==='error')throw new Error(j.error);
+      if(j.state==='done'){
+        const map={};for(const [n,p] of Object.entries(j.stems))map[n]=srv+p;
+        build(map);$('st').textContent='Hazır ✔';break;
+      }
+      $('st').textContent=j.state;
+    }
+  }catch(e){$('st').textContent='Hata: '+e.message}
+  $('go').disabled=false;
+};
+</script>
+</body>
+</html>
