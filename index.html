@@ -34,7 +34,9 @@ details summary{cursor:pointer;color:var(--mut);margin-bottom:6px}
   </details>
   <input type="url" id="yt" placeholder="YouTube linkini yapıştır">
   <div class="row">
-    <button class="p" id="go">Ayrıştır</button>
+    <button class="p" id="up">🎵 Şarkı dosyası seç ve ayrıştır</button>
+    <input type="file" id="song" accept="audio/*" hidden>
+    <button id="go">Linkten ayrıştır</button>
     <button id="pick">Hazır stem dosyaları yükle</button>
     <input type="file" id="files" accept="audio/*" multiple hidden>
   </div>
@@ -198,6 +200,31 @@ $('tap').onclick=()=>{
   if(taps.length&&n-taps[taps.length-1]>2000)taps=[];
   taps.push(n);if(taps.length>6)taps.shift();
   if(taps.length>1)setBpm(60000/((taps[taps.length-1]-taps[0])/(taps.length-1)));
+};
+
+// dosya yükle -> sunucu
+$('up').onclick=()=>$('song').click();
+$('song').onchange=async e=>{
+  const f=e.target.files[0];if(!f)return;
+  const srv=$('srv').value.trim().replace(/\/$/,'');
+  if(!srv){$('cfg').open=true;$('st').textContent='Önce sunucu adresini gir.';return}
+  try{localStorage.setItem('srv',srv)}catch(_){}
+  $('st').textContent='Yükleniyor...';
+  try{
+    const fd=new FormData();fd.append('file',f);
+    const {job}=await (await fetch(srv+'/upload',{method:'POST',body:fd})).json();
+    while(true){
+      await new Promise(r=>setTimeout(r,3000));
+      const j=await (await fetch(srv+'/status/'+job)).json();
+      if(j.state==='error')throw new Error(j.error);
+      if(j.state==='done'){
+        const map={};for(const [n,p] of Object.entries(j.stems))map[n]=srv+p;
+        build(map);$('st').textContent='Hazır ✔';break;
+      }
+      $('st').textContent=j.state;
+    }
+  }catch(err){$('st').textContent='Hata: '+err.message}
+  e.target.value='';
 };
 
 // hazır stem dosyaları (dosya adı: drums.mp3, bass.mp3, vocals.mp3 ...)

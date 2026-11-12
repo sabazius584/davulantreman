@@ -14,11 +14,13 @@ def run(job, url, model):
     try:
         os.makedirs(wd, exist_ok=True)
         jobs[job] = {"state": "İndiriliyor..."}
-        subprocess.run(["yt-dlp", "-x", "--audio-format", "mp3", "--no-playlist",
-                        "-o", os.path.join(wd, "src.%(ext)s"), url], check=True)
+        if url:
+            subprocess.run(["yt-dlp", "-x", "--audio-format", "mp3", "--no-playlist",
+                            "-o", os.path.join(wd, "src.%(ext)s"), url], check=True)
+        src = glob.glob(os.path.join(wd, "src.*"))[0]
         jobs[job] = {"state": "Ayrıştırılıyor (birkaç dk sürebilir)..."}
         subprocess.run([sys.executable, "-m", "demucs", "-n", model, "--mp3",
-                        "-o", wd, os.path.join(wd, "src.mp3")], check=True)
+                        "-o", wd, src], check=True)
         stems = {}
         for f in glob.glob(f"{wd}/{model}/src/*.mp3"):
             n = os.path.basename(f)[:-4]
@@ -32,6 +34,17 @@ def separate():
     d = request.get_json()
     job = uuid.uuid4().hex[:8]
     threading.Thread(target=run, args=(job, d["url"], d.get("model", "htdemucs_6s")), daemon=True).start()
+    return jsonify(job=job)
+
+@app.post("/upload")
+def upload():
+    f = request.files["file"]
+    model = request.form.get("model", "htdemucs_6s")
+    job = uuid.uuid4().hex[:8]
+    wd = os.path.join(OUT, job); os.makedirs(wd, exist_ok=True)
+    ext = os.path.splitext(f.filename)[1] or ".mp3"
+    f.save(os.path.join(wd, "src" + ext))
+    threading.Thread(target=run, args=(job, None, model), daemon=True).start()
     return jsonify(job=job)
 
 @app.get("/status/<job>")
