@@ -1,265 +1,376 @@
 <!DOCTYPE html>
-<html lang="tr">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Davul Antrenörü</title>
+<html lang="tr"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Bateri programı</title>
 <style>
-:root{--bg:#f6f6f4;--fg:#1c1c1a;--card:#fff;--ac:#d9480f;--mut:#777;--bd:#ddd}
-@media(prefers-color-scheme:dark){:root{--bg:#161615;--fg:#eee;--card:#222221;--mut:#999;--bd:#3a3a38}}
-*{box-sizing:border-box}
-body{margin:0;padding:12px;background:var(--bg);color:var(--fg);font:16px system-ui,sans-serif;max-width:640px;margin:auto}
-h1{font-size:20px;margin:6px 0 12px}
-.card{background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:12px;margin-bottom:12px}
-input[type=text],input[type=url]{width:100%;padding:12px;border:1px solid var(--bd);border-radius:8px;background:var(--bg);color:var(--fg);font-size:16px;margin-bottom:8px}
-button{padding:12px 14px;border:1px solid var(--bd);border-radius:8px;background:var(--card);color:var(--fg);font-size:15px;min-height:44px}
-button.p{background:var(--ac);color:#fff;border-color:var(--ac)}
-button.on{background:var(--ac);color:#fff;border-color:var(--ac)}
-.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
-.stem{display:flex;align-items:center;gap:8px;padding:8px 0;border-top:1px solid var(--bd)}
-.stem:first-child{border-top:0}
-.stem b{width:84px;font-size:14px}
-.stem input[type=range]{flex:1}
-input[type=range]{width:100%;accent-color:var(--ac)}
-small,#st{color:var(--mut)}
-details summary{cursor:pointer;color:var(--mut);margin-bottom:6px}
-</style>
-</head>
-<body>
-<h1>🥁 Davul Antrenörü</h1>
-
-<div class="card">
-  <details id="cfg"><summary>Sunucu adresi (server.py)</summary>
-    <input type="url" id="srv" placeholder="https://xxxx.trycloudflare.com">
-  </details>
-  <input type="url" id="yt" placeholder="YouTube linkini yapıştır">
-  <div class="row">
-    <button class="p" id="up">🎵 Şarkı dosyası seç ve ayrıştır</button>
-    <input type="file" id="song" accept="audio/*" hidden>
-    <button id="go">Linkten ayrıştır</button>
-    <button id="pick">Hazır stem dosyaları yükle</button>
-    <input type="file" id="files" accept="audio/*" multiple hidden>
-  </div>
-  <div id="st"></div>
-</div>
-
-<div class="card" id="metro">
-  <div class="row" style="margin-bottom:8px">
-    <b>Metronom</b>
-    <button id="mm">−</button>
-    <input type="number" id="bpm" value="100" min="30" max="260" style="width:76px;padding:10px;font-size:18px;text-align:center;border:1px solid var(--bd);border-radius:8px;background:var(--bg);color:var(--fg)">
-    <button id="mp">+</button>
-    <span>BPM</span>
-    <button id="tap">Tap</button>
-    <button class="p" id="mgo" style="margin-left:auto">▶ Başlat</button>
-  </div>
-  <input type="range" id="bpmr" min="30" max="260" value="100">
-  <div class="row" style="margin-top:8px">
-    <span>Vuruş</span>
-    <select id="mbeats" style="padding:10px;border-radius:8px;border:1px solid var(--bd);background:var(--bg);color:var(--fg)"><option>4</option><option>3</option><option>2</option><option>6</option></select>
-    <span style="margin-left:8px">Ses</span>
-    <input type="range" id="mvol" min="0.05" max="1" step="0.05" value="0.6" style="flex:1">
-  </div>
-</div>
-
-<div class="card" id="player" hidden>
-  <div class="row" style="margin-bottom:8px">
-    <button class="p" id="play">▶ Oynat</button>
-    <button id="back">−5sn</button>
-    <button id="fwd">+5sn</button>
-    <span id="time" style="margin-left:auto">0:00</span>
-  </div>
-  <input type="range" id="seek" min="0" max="1000" value="0">
-
-  <div class="row" style="margin:10px 0">
-    <span>Hız</span>
-    <input type="range" id="rate" min="0.5" max="1.25" step="0.05" value="1" style="flex:1">
-    <b id="rv">1.00x</b>
-  </div>
-
-  <div class="row" style="margin-bottom:10px">
-    <button id="la">A noktası</button>
-    <button id="lb">B noktası</button>
-    <button id="lc">Döngüyü sil</button>
-    <small id="ls"></small>
-  </div>
-
-  <div class="row" style="margin-bottom:6px">
-    <button id="nodrum">Davulsuz çal (üstüne çal)</button>
-    <button id="onlydrum">Sadece davul</button>
-    <button id="all">Hepsi</button>
-  </div>
-  <div id="mix"></div>
-</div>
-
+:root{--bg:#f4f6f7;--card:#fff;--ink:#1b2430;--mut:#5b6673;--line:#d9dee3;--acc:#0f766e;--on:#fcd34d;--btn:#fff;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#12161c;--card:#1b2129;--ink:#e6e9ee;--mut:#9aa5b1;--line:#2c3541;--acc:#5eead4;--on:#b45309;--btn:#06201d;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#12161c;--card:#1b2129;--ink:#e6e9ee;--mut:#9aa5b1;--line:#2c3541;--acc:#5eead4;--on:#b45309;--btn:#06201d;color-scheme:dark}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);background:var(--bg);z-index:10}
+main{max-width:1000px;margin:0 auto;padding:14px}
+h1{font-size:1.35rem;margin:6px 0 10px}
+.tabs{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}
+.tabs button{font:inherit;font-size:.86rem;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:999px;padding:6px 12px;cursor:pointer}
+.tabs button[aria-pressed=true]{background:var(--acc);color:var(--btn);border-color:var(--acc);font-weight:600}
+.tabs button:disabled{color:var(--mut);opacity:.55;cursor:default}
+.g{display:grid;gap:14px}
+@media(min-width:780px){.g{grid-template-columns:260px 1fr;align-items:start}}
+#ls{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:6px;max-height:72vh;overflow:auto}
+#ls button{display:block;width:100%;text-align:left;font:inherit;font-size:.9rem;border:0;background:none;color:var(--ink);padding:7px 8px;border-radius:6px;cursor:pointer}
+#ls button[aria-current=true]{background:var(--acc);color:var(--btn);font-weight:600}
+#pl{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px}
+#pl h2{margin:0;font-size:1.15rem}
+#pl p{margin:2px 0;font-size:.95rem}#pl b{color:var(--acc)}
+svg{display:block;width:100%;margin:8px 0 10px}
+.hl{fill:transparent}.hl.on{fill:var(--on);opacity:.55}
+.ct{display:flex;flex-wrap:wrap;gap:8px 16px;align-items:center}
+.ct label{display:flex;align-items:center;gap:6px;font-size:.9rem}
+.ct output{min-width:3.4em;font-weight:600;font-variant-numeric:tabular-nums}
+.ct input[type=range]{accent-color:var(--acc);width:130px}
+.ct>button{font:inherit;font-weight:600;border:1px solid var(--acc);border-radius:8px;padding:9px 14px;background:none;color:var(--ink);cursor:pointer;min-height:44px}
+#pb{background:var(--acc)!important;color:var(--btn)!important}
+button:focus-visible,input:focus-visible{outline:3px solid var(--on);outline-offset:2px}
+.vr{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:8px 0 0;font-size:.88rem;color:var(--mut)}.vr button{font:inherit;min-width:34px;height:34px;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:8px;cursor:pointer}.vr button[aria-pressed=true]{background:var(--acc);color:var(--btn);border-color:var(--acc);font-weight:600}
+.k{color:var(--mut);font-size:.82rem;margin-top:10px}
+</style></head><body><main>
+<h1>Bateri programı</h1>
+<div class="tabs" id="sc"></div>
+<div class="g"><div id="ls"></div>
+<div id="pl"><h2 id="tt"></h2><p id="nt"></p><p id="ny"></p><div class="vr" id="vr"></div><div id="sv"></div>
+<div class="ct"><button id="pb" type="button">▶ Çal</button><button id="nw" type="button">↻ Varyasyon</button><button id="bk" type="button">◀ Önceki</button>
+<label>Tempo <input id="bpm" type="range" min="40" max="140" value="60"><output id="bo"></output></label>
+<label><input id="hf" type="checkbox"> Yarım hız</label><label><input id="lp" type="checkbox" checked> Döngü</label>
+<label><input id="ck" type="checkbox" checked> Tık</label><label><input id="ci" type="checkbox"> Sayım</label></div>
+<p class="k">x = hi-hat/ride/crash, dolu nota = snare, tom, kick (en altta); üst sesler eller, alt sesler ayaklar. R/L = sağ/sol el. Ses tarayıcıda üretilir, gerçek davul kaydı değildir.</p></div></div>
+</main>
 <script>
-const $=id=>document.getElementById(id);
-const AC=new (window.AudioContext||window.webkitAudioContext)();
-const NAMES={drums:'🥁 Davul',bass:'Bas',vocals:'Vokal',guitar:'Gitar',piano:'Piyano',other:'Diğer'};
-const ORDER=['drums','bass','vocals','guitar','piano','other'];
-let stems={},master=null,A=null,B=null,timer=null;
-try{$('srv').value=localStorage.getItem('srv')||''}catch(e){}
-
-const fmt=s=>Math.floor(s/60)+':'+String(Math.floor(s%60)).padStart(2,'0');
-const all=()=>Object.values(stems).map(s=>s.el);
-
-function applyGains(){
-  const solo=Object.values(stems).some(s=>s.solo);
-  for(const s of Object.values(stems)){
-    const aud=!s.mute&&(!solo||s.solo);
-    s.g.gain.value=aud?s.vol:0;
-    s.mb.classList.toggle('on',s.mute);
-    s.sb.classList.toggle('on',s.solo);
-  }
-}
-
-function build(map){
-  all().forEach(e=>{e.pause();e.src=''});
-  stems={};$('mix').innerHTML='';
-  const names=Object.keys(map).sort((a,b)=>(ORDER.indexOf(a)+99)%99-(ORDER.indexOf(b)+99)%99);
-  for(const n of names){
-    const el=new Audio();
-    el.crossOrigin='anonymous';el.preload='auto';el.src=map[n];
-    el.preservesPitch=true;el.webkitPreservesPitch=true;
-    const g=AC.createGain();
-    AC.createMediaElementSource(el).connect(g).connect(AC.destination);
-    const row=document.createElement('div');row.className='stem';
-    row.innerHTML=`<b>${NAMES[n]||n}</b><button>M</button><button>S</button><input type="range" min="0" max="1" step="0.01" value="1">`;
-    const [mb,sb]=row.querySelectorAll('button'),vr=row.querySelector('input');
-    const s={el,g,mute:false,solo:false,vol:1,mb,sb};
-    mb.onclick=()=>{s.mute=!s.mute;applyGains()};
-    sb.onclick=()=>{s.solo=!s.solo;applyGains()};
-    vr.oninput=()=>{s.vol=+vr.value;applyGains()};
-    stems[n]=s;$('mix').appendChild(row);
-  }
-  master=(stems.drums||Object.values(stems)[0]).el;
-  A=B=null;$('ls').textContent='';
-  $('player').hidden=false;applyGains();
-  clearInterval(timer);timer=setInterval(tick,200);
-}
-
-function tick(){
-  if(!master)return;
-  const t=master.currentTime,d=master.duration||0;
-  if(B!=null&&t>=B){seekAll(A??0)}
-  if(!master.paused)for(const e of all())if(e!==master&&Math.abs(e.currentTime-master.currentTime)>0.08)e.currentTime=master.currentTime;
-  if(!seeking)$('seek').value=d?t/d*1000:0;
-  $('time').textContent=fmt(t)+' / '+fmt(d);
-}
-function seekAll(t){all().forEach(e=>e.currentTime=Math.max(0,t))}
-let seeking=false;
-$('seek').onpointerdown=()=>seeking=true;
-$('seek').onpointerup=()=>seeking=false;
-$('seek').oninput=e=>seekAll(e.target.value/1000*(master.duration||0));
-
-$('play').onclick=async()=>{
-  await AC.resume();
-  if(master.paused){all().forEach(e=>e.play());$('play').textContent='⏸ Duraklat'}
-  else{all().forEach(e=>e.pause());$('play').textContent='▶ Oynat'}
-};
-$('back').onclick=()=>seekAll(master.currentTime-5);
-$('fwd').onclick=()=>seekAll(master.currentTime+5);
-$('rate').oninput=e=>{const r=+e.target.value;all().forEach(x=>x.playbackRate=r);$('rv').textContent=r.toFixed(2)+'x'};
-const ls=()=>$('ls').textContent=(A!=null?'A '+fmt(A):'')+(B!=null?'  B '+fmt(B):'');
-$('la').onclick=()=>{A=master.currentTime;ls()};
-$('lb').onclick=()=>{B=master.currentTime;if(A==null)A=0;ls()};
-$('lc').onclick=()=>{A=B=null;ls()};
-$('nodrum').onclick=()=>{for(const [n,s] of Object.entries(stems)){s.solo=false;s.mute=n==='drums'}applyGains()};
-$('onlydrum').onclick=()=>{for(const [n,s] of Object.entries(stems)){s.solo=false;s.mute=n!=='drums'}applyGains()};
-$('all').onclick=()=>{for(const s of Object.values(stems)){s.solo=false;s.mute=false}applyGains()};
-
-// metronom
-let mOn=false,mBeat=0,mNext=0,mTimer=null,taps=[];
-const getBpm=()=>Math.min(260,Math.max(30,+$('bpm').value||100));
-function setBpm(v){v=Math.min(260,Math.max(30,Math.round(v)));$('bpm').value=v;$('bpmr').value=v}
-function click(t,acc){
-  const o=AC.createOscillator(),g=AC.createGain(),v=+$('mvol').value;
-  o.frequency.value=acc?1600:1000;
-  g.gain.setValueAtTime(0.0001,t);
-  g.gain.exponentialRampToValueAtTime(v,t+0.002);
-  g.gain.exponentialRampToValueAtTime(0.0001,t+0.05);
-  o.connect(g).connect(AC.destination);o.start(t);o.stop(t+0.06);
-}
-function sched(){
-  while(mNext<AC.currentTime+0.15){
-    click(mNext,mBeat%(+$('mbeats').value)===0);
-    mBeat++;mNext+=60/getBpm();
-  }
-}
-$('mgo').onclick=async()=>{
-  await AC.resume();
-  if(!mOn){mOn=true;mBeat=0;mNext=AC.currentTime+0.05;mTimer=setInterval(sched,25);$('mgo').textContent='⏸ Durdur'}
-  else{mOn=false;clearInterval(mTimer);$('mgo').textContent='▶ Başlat'}
-};
-$('bpmr').oninput=e=>setBpm(+e.target.value);
-$('bpm').onchange=()=>setBpm(getBpm());
-$('mm').onclick=()=>setBpm(getBpm()-1);
-$('mp').onclick=()=>setBpm(getBpm()+1);
-$('tap').onclick=()=>{
-  const n=performance.now();
-  if(taps.length&&n-taps[taps.length-1]>2000)taps=[];
-  taps.push(n);if(taps.length>6)taps.shift();
-  if(taps.length>1)setBpm(60000/((taps[taps.length-1]-taps[0])/(taps.length-1)));
-};
-
-// dosya yükle -> sunucu
-$('up').onclick=()=>$('song').click();
-$('song').onchange=async e=>{
-  const f=e.target.files[0];if(!f)return;
-  const srv=$('srv').value.trim().replace(/\/$/,'');
-  if(!srv){$('cfg').open=true;$('st').textContent='Önce sunucu adresini gir.';return}
-  try{localStorage.setItem('srv',srv)}catch(_){}
-  $('st').textContent='Yükleniyor...';
-  try{
-    const fd=new FormData();fd.append('file',f);
-    const {job}=await (await fetch(srv+'/upload',{method:'POST',body:fd})).json();
-    while(true){
-      await new Promise(r=>setTimeout(r,3000));
-      const j=await (await fetch(srv+'/status/'+job)).json();
-      if(j.state==='error')throw new Error(j.error);
-      if(j.state==='done'){
-        const map={};for(const [n,p] of Object.entries(j.stems))map[n]=srv+p;
-        build(map);$('st').textContent='Hazır ✔';break;
-      }
-      $('st').textContent=j.state;
-    }
-  }catch(err){$('st').textContent='Hata: '+err.message}
-  e.target.value='';
-};
-
-// hazır stem dosyaları (dosya adı: drums.mp3, bass.mp3, vocals.mp3 ...)
-$('pick').onclick=()=>$('files').click();
-$('files').onchange=e=>{
-  const map={};
-  [...e.target.files].forEach((f,i)=>{
-    const k=Object.keys(NAMES).find(n=>f.name.toLowerCase().includes(n))||('parça'+(i+1));
-    map[k]=URL.createObjectURL(f);
-  });
-  if(Object.keys(map).length)build(map);
-};
-
-// YouTube -> sunucu
-$('go').onclick=async()=>{
-  let srv=$('srv').value.trim().replace(/\/$/,''),url=$('yt').value.trim();
-  if(!srv){$('cfg').open=true;$('st').textContent='Önce sunucu adresini gir.';return}
-  if(!url){$('st').textContent='YouTube linki gir.';return}
-  try{localStorage.setItem('srv',srv)}catch(e){}
-  $('go').disabled=true;$('st').textContent='Gönderiliyor...';
-  try{
-    const {job}=await (await fetch(srv+'/separate',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({url})})).json();
-    while(true){
-      await new Promise(r=>setTimeout(r,3000));
-      const j=await (await fetch(srv+'/status/'+job)).json();
-      if(j.state==='error')throw new Error(j.error);
-      if(j.state==='done'){
-        const map={};for(const [n,p] of Object.entries(j.stems))map[n]=srv+p;
-        build(map);$('st').textContent='Hazır ✔';break;
-      }
-      $('st').textContent=j.state;
-    }
-  }catch(e){$('st').textContent='Hata: '+e.message}
-  $('go').disabled=false;
-};
-</script>
-</body>
-</html>
+const SC=['El tekniği: rebound, single/double, buzz, paradiddle','Temelleri öğren ve hemen çalmaya başla','Kitte rahatça dolaş','Şarkıları çalmak için beceriler','Kontrolü kaybetmeden hızlan','Groove’unu genişlet','PAS 40 uluslararası rudiment'];
+const P=s=>s.split(';').map(b=>Object.fromEntries(b.split('|').map(r=>{const i=r.indexOf(':');return[r.slice(0,i),r.slice(i+1).split(' ')]})));
+const L1=(()=>{const X8='x x x x x x x x',BB='S:. . S . . . S .',KK='K:K . . . K . . .',X16='x x x x x x x x x x x x x x x x',R16='R L R L R L R L R L R L R L R L';
+const P=s=>s.split(';').map(b=>Object.fromEntries(b.split('|').map(r=>{const i=r.indexOf(':');return[r.slice(0,i),r.slice(i+1).split(' ')]})));
+const G=(h,k)=>'HH:'+h+'|'+BB+'|K:'+k,RG=(k)=>'Rd:'+X8+'|'+BB+'|K:'+k;
+const FA='S:S S . . . . . .|T1:. . T T . . . .|T2:. . . . T T . .|FT:. . . . . . T T|l:R L R L R L R L',FB='T1:T T . . . . . .|T2:. . T T . . . .|FT:. . . . T T T T|S:. . . . . . . .|l:R L R L R L R L';
+// [başlık, odak, yap, desenler (dizgi dizisi) ya da sayı = davullara dağıtma (n vuruş/davul)]
+const L=[
+['Hi-hat ve snare','sağ el hi-hat’te sabit 8’likler, sol el snare’de.','Hi-hat’i hiç aksatma; snare’i sayarak beat’e oturt.',['HH:'+X8+'|'+BB,'HH:'+X8+'|S:S . . . S . . .','HH:x . x . x . x .|'+BB]],
+['Ride ve floor tom','aynı kalıp, iki farklı ses: sağ el ride, sol el floor tom.','Ride’ı sabit tut; floor tom’u beat’e oturt.',['Rd:'+X8+'|FT:. . T . . . T .','Rd:x . x . x . x .|FT:T . T . T . T .','Rd:'+X8+'|FT:T . . . T . . .']],
+['Single stroke nedir?','sağ ve sol elin dönüşümlü, eşit vuruşları.','Zayıf eli dinle; ses ve yükseklik eşit olsun.',['S:S S S S S S S S|l:R L R L R L R L','S:S S S S S S S S|l:L R L R L R L R','S:'+'S S S S S S S S S S S S S S S S|l:'+R16]],
+['Kick’i ekle','üç uzvun birlikte çalışması: eller aynı, ayak kick’te.','Önce hi-hat + snare’i sabitle, kick’i sayarak ekle.',[G(X8,'K . . . K . . .'),G(X8,'K . . K . . . .'),G(X8,'K . . . K K . .'),G(X8,'K . . K K . . .')]],
+['Alt ses temeli','kick ile floor tom: derin sesler groove’un temeli.','Kick ve floor tom aynı anda çalmaz; sırayla, net olsun.',['Rd:'+X8+'|FT:. . T . . . T .|'+KK,'Rd:'+X8+'|FT:. . T . . . T .|K:K . . K . . . .','Rd:'+X8+'|FT:. . T . . . T .|K:K . . . . K K .']],
+['Davullar etrafında single’lar','single stroke’u snare ve tomlar arasında gezdirmek.','Yükseklik aynı kalsın; kolu yönlendir, bilekle çal.',2],
+['Üçünü birleştir','eller, ayak ve fill: groove’dan fill’e geçiş.','Fill’de elleri dönüşümlü çal; groove’a ilk vuruşta (kick) dön.',[G(X8,'K . . . K . . .')+';'+FA,G(X8,'K . . K K . . .')+';'+FB]],
+['Kitte koordinasyon','tom’lara uzanıp groove’a dönmek.','Tom’dan sonra elin hi-hat’e dönüşünü önceden düşün.',['HH:'+X8+'|S:. . S . . . . .|T1:. . . . . . T .|'+KK,'HH:'+X8+'|S:. . S . . . . .|FT:. . . . . . T .|'+KK,'HH:'+X8+'|S:. . . . . . S .|T2:. . T . . . . .|'+KK]],
+['Dörtlü gruplar','16’lıkları dörder dörder davullara dağıtmak.','Her grup bir davul: dört vuruşu eşit çal, kolu sonraki davula önceden götür.',4],
+['Adım atla','vuruşları atlayarak aynı akışı korumak.','Atlanan notaları içinden say; elin hareketi durmasın.',[G('x x x . x x x .',' K . . . K . . .'.trim()),G('x . x x x . x x','K . . . K . . .'),G('x x . x x . x .','K . . . K . . .')]],
+['Sol eli hareket ettir','sol elin snare’den tom’lara kayması.','Sağ el hi-hat’te sabit; sol elin yolunu önceden planla.',['HH:'+X8+'|S:. . S . . . . .|T1:. . . . . . T .|'+KK,'HH:'+X8+'|S:. . . . . . S .|T1:. . T . . . . .|'+KK,'HH:'+X8+'|S:. . S . . . . .|T2:. . . . . . T .|'+KK]],
+['Single stroke kombinasyonları','snare ve tom çiftleri: single’ı kombine etmek.','El değişimini koru; yeni davula geçerken tempo kaymasın.',['S:S S . . S S . .|T1:. . T T . . T T|l:R L R L R L R L','S:S S S S . . . .|T2:. . . . T T T T|l:R L R L R L R L','T1:T T . . T T . .|FT:. . T T . . T T|l:L R L R L R L R']],
+['Groove’u oturt','dengeli, tekrarlanabilir bir groove.','Metronomla kesintisiz çal; hiçbir uzvu öne ya da arkaya düşürme.',[G(X8,'K . . . K . . .'),G(X8,'K . K . K . . .'),G('x . x . x . x .','K . . . K . . .')]],
+['Groove seçeneklerini genişlet','ride ve 16’lıklarla yeni groove’lar.','Yeni sese geç ama tempoyu ve snare’i koru.',[RG('K . . K . . . .'),'HH:'+X16+'|S:. . . . S . . . . . . . S . . .|K:K . . . . . . . K . . . . . . .','HH:'+X16+'|S:. . . . S . . . . . . . S . . .|K:K . . . . . K . K . . . . . . .']],
+['Kombinasyon çalışması','bir ölçü groove, bir ölçü fill.','Fill’i tempoyu bozmadan çal; groove’a ilk vuruşta dön.',[G(X8,'K . . . K . . .')+';'+FB,RG('K . . . K . . .')+';'+FA]],
+['“Money beat” nedir?','rock’ın temel groove’u: hi-hat 8’likler, snare 2 ve 4, kick 1 ve 3.','Hatasız ve sabit çal; bunu diğer her şeyin referansı say.',[G(X8,'K . . . K . . .'),G(X8,'K . . . K K . .'),G(X8,'K . . K K . . .')]],
+['Ride’da 8’likler','money beat’i ride’a taşımak.','Ride’ı hi-hat kadar eşit çal; snare’i ride’dan bağımsız tut.',[RG('K . . . K . . .'),RG('K . . . K K . .'),'Rd:x . x . x . x .|'+BB+'|'+KK]],
+['Ellerin koordinasyonu','sağ elin ritmi sabit, sol elin snare vuruşları değişken.','Sağ eli tekdüze tut; sol elin yeni yerlerini önce yavaş dene.',['HH:'+X8+'|S:. . S . . S . .|'+KK,'HH:'+X8+'|S:. . S . . . S S|'+KK,'HH:'+X8+'|S:. S S . . . S .|'+KK]]];
+return L})();
+const L2=(()=>{const H8='x x x x x x x x',H4='x . x . x . x .',H16='x x x x x x x x x x x x x x x x',E16='x . x . x . x . x . x . x . x .',S24='S:. . S . . . S .',S16='S:. . . . S . . . . . . . S . . .',K13='K . . . K . . .',R16='R L R L R L R L R L R L R L R L';
+const P=s=>s.split(';').map(b=>Object.fromEntries(b.split('|').map(r=>{const i=r.indexOf(':');return[r.slice(0,i),r.slice(i+1).split(' ')]})));
+const g=(h,k,s)=>'HH:'+h+'|'+(s||S24)+'|K:'+k,r=(k,s)=>'Rd:'+H8+'|'+(s||S24)+'|K:'+k,g16=(k,h,s)=>'HH:'+(h||H16)+'|'+(s||S16)+'|K:'+k;
+const fl=(o,n)=>{n=n||2;const m=n*4;return o.map((d,j)=>d+':'+Array.from({length:m},(_,k)=>k>=j*n&&k<j*n+n?'T':'.').join(' ')).join('|')+'|l:'+Array.from({length:m},(_,k)=>k%2?'L':'R').join(' ')};
+const O1=['S','T1','T2','FT'],O2=['T1','T2','FT','S'],O3=['FT','T2','T1','S'],O4=['S','FT','T2','T1'];
+const CR='HH:. x x x x x x x|C:C . . . . . . .|'+S24+'|K:'+K13,CE='C:C . . . . . . .|S:. . . . . . . .|K:K . . . . . . .';
+const K1='K . . . . . . . K . . . . . . .',K2='K . . . . . K . K . . . . . . .',K3='K . . . . . . . K . K . . . . .',K4='K . . . . . . . K . . . . . K .',K5='K . K . . . K . K . . . K . . .',K6='K . . K . K . . K . K . . . . .',K7='K K . . . . . . K K . . . . . .';
+const L=[
+['8’lik fill','bir ölçüyü dolduran 8’lik fill.','Fill’i 8’liklerle çal, tempoyu bozma; groove’a kick ile dön.',[g(H8,K13)+';'+fl(O1),g(H8,K13)+';'+fl(O2),r(K13)+';'+fl(O3)]],
+['Sloshy (açık) hi-hat','açık hi-hat’in groove’a “sulu” bir his katması.','Açık notada pedalı bırak, sonraki nota gelmeden kapat.',[g('x O x O x O x O',K13),g('x x x x x x x O',K13),g('x O x x x O x x',K13)]],
+['Tom’ları kat','snare notalarından birini tom’a taşımak.','Sağ el hi-hat’te sabit; sol el tom’a gidip snare’e dönsün.',[g(H8,K13,'S:. . S . . . . .|T1:. . . . . . T .'),g(H8,K13,'S:. . S . . . . .|FT:. . . . . . T .'),g(H8,K13,'S:. . . . . . S .|T2:. . T . . . . .')]],
+['Yeni varyasyon','snare’in ek vuruşlarla değişmesi.','Ek snare vuruşunu önceden say; hi-hat’i aksatma.',[g(H8,K13,'S:. . S . . . S S'),g(H8,K13,'S:. . S . . S . S'),g(H8,'K . . K K . . .','S:. . S . . . S S')]],
+['Hi-hat geçişleri','hi-hat’ten ride’a ve 4’lükten 8’liğe geçmek.','Geçişte snare ve kick sabit; sadece sağ elin yeri değişsin.',[g(H8,K13)+';'+r(K13),g(H4,K13)+';'+g(H8,K13),r(K13)+';'+g('x O x O x O x O',K13)]],
+['Fill geçişleri','groove, fill ve crash’le yeni groove: tam bir döngü.','Fill’den sonraki ilk vuruşa crash + kick koy; sağ el hi-hat’e hemen dönsün.',[g(H8,K13)+';'+fl(O1)+';'+CR,r(K13)+';'+fl(O2)+';'+CR]],
+['İki deseni birlikte','iki farklı groove’u peş peşe çalmak.','Ölçü geçişinde tempo sabit kalsın; yeni deseni önceden düşün.',[g(H8,K13)+';'+g(H8,'K . . K K . . .'),r(K13)+';'+g(H8,'K . K . K . . .'),g(H8,K13)+';'+g(H4,K13)]],
+['Ride bell','ride’ın bell kısmıyla vurgu.','Bell’e stick’in omzuyla vur; groove’un geri kalanı sabit kalsın.',['Rd:B x x x B x x x|'+S24+'|K:'+K13,'Rd:B x B x B x B x|'+S24+'|K:'+K13,'Rd:x x x x x x x B|'+S24+'|K:'+K13]],
+['Fill’i ikiye katla','iki ölçülük fill.','Fill’i iki ölçü boyunca akıt; tempo ve el sırası bozulmasın.',[fl(O1)+';'+fl(O2),fl(O3)+';'+fl(O4)]],
+['Varyasyonlar fill olarak','groove varyasyonlarını fill gibi kullanmak.','Ek kick ve snare vuruşları fill’i taşısın; hi-hat’i bırakma.',[g(H8,'K . K K . K K .'),g(H8,K13)+';'+g(H8,'K K K K K K K K'),g(H8,K13,'S:. . S . S S S S')]],
+['Kitte zil sesleri','ride, bell ve crash’i groove’a katmak.','Zil değişirken snare ve kick aynı kalsın.',[r(K13)+';'+CE,'Rd:B x B x B x B x|'+S24+'|K:'+K13,g(H8,K13)+';C:C . . . C . . .|'+S24+'|K:'+K13]],
+['Tam ölçü fill','bütün bir ölçüyü dolduran fill.','Her davula eşit sürede kal; son vuruş sonraki ölçüye akıt.',[g(H8,K13)+';'+fl(O1),g(H8,K13)+';'+fl(O4),g(H8,K13)+';'+fl(O2)]],
+['İkisini birleştir','fill’i groove arasına yerleştirmek.','Groove, fill, groove: üç ölçüyü kesintisiz çal.',[fl(O1)+';'+g(H8,K13),g(H8,K13)+';'+fl(O3)+';'+g(H8,K13)]],
+['16’lık notalar nedir?','bir vuruşu dörde bölen 16’lık notalar.','Sayımı yüksek sesle yap: 1 e & a.',[g16(K1),g16(K2),g16(K3)]],
+['Fazladan kick notası','16’lık gruplarda ek kick vuruşları.','Ekstra kick’i hi-hat ile birlikte sayarak ekle.',[g16(K3),g16(K4),g16('K . . K . . . . K . . . . . . .')]],
+['4’lük ve 8’lik notalar','nota değerlerini birbirine geçirmek.','Hi-hat 4’lükten 8’liğe geçerken tempo aynı kalsın.',[g(H4,K13)+';'+g(H8,K13),g(H8,K13)+';'+g(H4,K13),g(H4,'K . . K K . . .')+';'+g(H8,K13)]],
+['Groove’u getir','16’lık hi-hat’le groove oturtmak.','Hi-hat’i eşit tut; snare ve kick sayıya otursun.',[g16(K1,E16),g16(K2,E16),g16(K3)]],
+['Daha da fazla kick','kick’le daha yoğun 16’lık kalıplar.','Kick’leri tek tek say; hi-hat hiç duraksamasın.',[g16(K5),g16(K6),g16(K7)]],
+['8’lik varyasyonlar','8’lik gruplarda kick ve snare değişimleri.','Değişen kick’i hissederek çal; hi-hat 8’likleri sabit.',[g(H8,'K . K . . K . .'),g(H8,'K K . . K . K .'),g(H8,'K . . K . K . .')]],
+['16’lıkları ikiye katla','16’lıklarda ardışık çift kick.','Çift kick’in ikincisini de aynı güçte çal.',[g16(K7),g16('K K . . . . . . K . . . K K . .'),g16('K . K K . . . . K . . . . . K K')]],
+['Kick yaratıcılığı','kick’i kendi kalıplarınla kurmak.','Önce kick’i tek başına say, sonra eller ekle.',[g16(K5,H16,'S:. . . . S . . S . . . . S . . .'),g16(K6),g16(K4,E16)]],
+['16’lık notalar','eller 16’lık: single stroke ve groove.','Elleri eşit tut; sticking’e güven.',['S:S S S S S S S S S S S S S S S S|l:'+R16,g16(K1),g16(K2,E16)]],
+['16’lıkların içinde crash','crash’i 16’lık groove’a yerleştirmek.','Crash vuruşunda hi-hat’in bir nota eksildiğini say.',['C:C . . . . . . . . . . . . . . .|HH:. x x x x x x x x x x x x x x x|'+S16+'|K:'+K1,g16(K1)+';C:C . . . . . . . . . . . . . . .|HH:. x x x x x x x x x x x x x x x|'+S16+'|K:'+K1]],
+['Kitte geçişler','16’lık tom geçişleri.','Her davulda 4 vuruş: kolu önceden yönlendir.',[g(H8,K13)+';'+fl(O1,4),g(H8,K13)+';'+fl(O2,4),g16(K1)+';'+fl(O3,4)]],
+['Crash ekle','groove’un başına crash koymak.','Crash’ten sonra hi-hat’e hemen dön.',[g(H8,K13)+';'+CR,r(K13)+';'+CR,g16(K1)+';'+CR]],
+['Hızını artır','aynı kalıbı kademeli hızlandırmak.','Her turda tempoyu 5 bpm artır; gevşek kal, ses eşit olsun.',[g16(K1),g16(K2),g16(K5)]],
+['Sonda crash','fill’in bittiği yerde crash.','Fill’in son vuruşunu crash’e doğru çal; groove geri gelsin.',[fl(O1)+';'+CE,fl(O3)+';'+CE]],
+['Sus ekle','kalıplara sus koymak.','Susları sayarak çal; ritim susla da devam eder.',[g('x x . x x x . x',K13),g('x . x x x . x x',K13),g('x x x . x x . x',K13)]]];
+return L})();
+const L3=(()=>{const H8='x x x x x x x x',HO='x O x O x O x O',S24='S:. . S . . . S .',F4='K . K . K . K .',K13='K . . . K . . .',H16='x x x x x x x x x x x x x x x x';
+const g=(h,k,s)=>'HH:'+h+'|'+(s||S24)+'|K:'+k,r=(k,s)=>'Rd:'+H8+'|'+(s||S24)+'|K:'+k;
+const gm=(h,k,n)=>Object.entries({HH:h,S:'. . S . . . S .',K:k}).map(([a,v])=>a+':'+v.split(' ').map((t,i)=>i<n?'.':t).join(' ')).join('|');
+const L=[
+['Four on the floor nedir?','her vuruşta kick: dans müziğinin temel groove’u.','Kick’i metronom gibi sabit çal; hi-hat ve snare üstüne otursun.',[g(H8,F4),g(HO,F4),g(H8,F4,'S:. . S . . . S S')]],
+['Dördüncü vuruştan başla','groove’a ölçünün son vuruşunda girmek.','İlk ölçüde 4. vuruşu say; sonra tam groove’a geç.',[gm(H8,F4,6)+';'+g(H8,F4),gm(HO,F4,6)+';'+g(HO,F4)]],
+['Gevşek kal','tekrar eden kick’e rağmen bacağı ve omuzları rahat tutmak.','Kick’i bilekten çal, bacağı sıkma; sesin eşit kalıp kalmadığını dinle.',[g(H8,F4),g(HO,F4)]],
+['Ride’a geç','four on the floor’u ride ile çalmak.','Ride’ı hi-hat gibi eşit tut; kick ve snare yerinde kalsın.',[r(F4),r(F4,'S:. . S . . . S S'),'Rd:x . x . x . x .|'+S24+'|K:'+F4]],
+['Üçüncü vuruştan başla','groove’a ölçünün ortasından girmek.','İlk iki vuruşu içinden say; üçüncüde tam groove’la gir.',[gm(H8,F4,4)+';'+g(H8,F4),gm(HO,F4,4)+';'+g(HO,F4)]],
+['Nota atla','kick’lerin bir kısmını çalmamak.','Atlanan kick’i içinden say; ritim akışı bozulmasın.',[g(H8,'K . K . K . . .'),g(H8,'K . K . . . K .'),g(H8,'K . . . K . K .')]],
+['Four on the floor geçişleri','groove’lar arasında geçmek.','Geçişte kick’in yeri değişirken tempo aynı kalsın.',[g(H8,F4)+';'+g(H8,K13),g(H8,K13)+';'+g(H8,F4),r(F4)+';'+g(H8,F4)]],
+['İkinci vuruştan başla','groove’a ikinci vuruştan girmek.','İlk vuruşu sayıp bekle; ikinciden itibaren tam groove.',[gm(H8,F4,2)+';'+g(H8,F4),gm(HO,F4,2)+';'+g(HO,F4)]],
+['İleriyi düşün','bir sonraki ölçüde ne çalacağını önceden hazırlamak.','Ölçünün son iki vuruşunda bir sonraki ölçünün ilk notasını düşün.',[g(H8,F4)+';'+g(H8,K13)+';'+g(H8,F4),g(HO,F4)+';'+g(H8,'K . K . K . . .')]],
+['Snare’i değiştir','four on the floor üzerinde snare varyasyonları.','Kick sabit; snare’in yeni yerini sayıyla bul.',[g(H8,F4,'S:. . S . . . . S'),g(H8,F4,'S:. . S . . S . S'),g(HO,F4,'S:. . S S . . S .')]],
+['Birinci vuruştan başla','groove’a tam birinci vuruşta girmek.','Girişi sayıyla yap; birinci vuruşta kick ve hi-hat birlikte.',[g(H8,F4)+';'+g(H8,F4,'S:. . S . . . S S')]],
+['Daha da fazla nota atla','kick’i seyrekleştirmek.','Boşlukları say; hi-hat tek başına ritmi taşısın.',[g(H8,K13),g(H8,'K . K . . . . .'),g(H8,'. . K . . . K .')]],
+['Four on the floor yaratıcılığı','kendi varyasyonlarını kurmak.','Önce kick’i tek başına say, sonra el ekle.',[g(HO,'K . K . K . K K'),g(H8,'K K K . K . K .'),g(HO,F4,'S:. . S . . . S S')]],
+['Zamanlama kombinasyonları','farklı groove’ları sırayla çalmak.','Her ölçüde tempoyu koru; yeni deseni önceden düşün.',[g(H8,F4)+';'+g(HO,F4)+';'+g(H8,K13),r(F4)+';'+g(H8,F4)+';'+r(K13)]],
+['Rahat alanını bul','en rahat çaldığın groove’u seçip derinleştirmek.','Bir groove’u metronomla 2 dakika kesintisiz çal; gevşek kal.',[g(H8,F4),r(F4),g(HO,F4)]],
+['Sol ayağı koordine et','sol ayak hi-hat pedalında, sağ ayak kick’te.','Sol ayağı 2 ve 4’te bas; kick’ten bağımsız kalsın.',[g(H8,F4)+'|F:. . F . . . F .',g(H8,F4)+'|F:F . F . F . F .',g(H8,K13)+'|F:. . F . . . F .']],
+['Flam nedir?','ana vuruşun hemen önünde çok hafif bir grace note.','Grace note’u alçaktan, ana vuruşu yüksekten çal; tek kalın ses çıksın.',['S:f . . . f . . .','S:f . f . f . f .',g(H8,K13,'S:. . f . . . f .')]],
+['Ghost note nedir?','çok hafif, duyulur duyulmaz snare vuruşları.','Ghost’ları alçak yükseklikten çal; backbeat net kalsın.',[g(H8,K13,'S:. . S g . . S g'),g(H8,K13,'S:. g S . . g S .'),g(H8,K13,'S:g . S g . . S .')]],
+['8’lik groove','ghost note’lu 8’lik groove’lar.','Ghost ile vurgu arasındaki ses farkını koru.',[g(H8,K13,'S:g . S g g . S .'),g(H8,'K . K . . . K .','S:. g S . g . S .'),g(H8,K13,'S:. g S . . g S g')]],
+['Tom’larda flam','flam’ı tom’lara taşımak.','Her tom’da aynı grace note + ana vuruş hissi.',['T1:f . . . f . . .','T2:f . . . . . f .','FT:f . f . f . f .']],
+['Kick’i getir','flam’lı groove’a kick eklemek.','Flam ve kick’i aynı anda çalma; kick’in yerini sayıyla bul.',[g(H8,K13,'S:. . f . . . f .'),g(H8,'K . . K K . . .','S:. . f . . . f .'),g(H8,F4,'S:. . f . . . f .')]],
+['Koordinasyonda rahatlama','flam ve normal vuruşları birlikte çalmak.','Flam’lı ve normal snare vuruşlarını ayır; hi-hat sabit.',[g(H8,K13,'S:. . f . . . S .'),g(H8,F4,'S:. . S . . . f .'),g(HO,K13,'S:. . f . . . f .')]],
+['Flam’lı tom fill’leri','fill’lerde tom’larda flam kullanmak.','Her tom’da flam’ı net çal, sonraki tom’a önceden git.',[g(H8,K13)+';S:f . . . . . . .|T1:. . f . . . . .|T2:. . . . f . . .|FT:. . . . . . f .',g(H8,K13)+';FT:f . . . . . . .|T2:. . f . . . . .|T1:. . . . f . . .|S:. . . . . . f .']],
+['Farklı vuruşta aç','hi-hat’i farklı vuruşlarda açmak.','Açık notada pedalı bırak, sonraki notadan önce kapat.',[g('O x x x x x x x',K13),g('x x O x x x x x',K13),g('x x x x O x x x',K13),g('x x x x x x O x',K13)]],
+['Flam ve 16’lıkları birleştir','16’lıklarda flam.','16’lık hi-hat sabit; flam’ı 2. ve 4. vuruşa koy.',['HH:'+H16+'|S:. . . . f . . . . . . . f . . .|K:K . . . . . . . K . . . . . . .','HH:'+H16+'|S:. . . . f . . . . . . . f . . .|K:K . . . . . K . K . . . . . . .']],
+['Kick’i değiştir','flam’lı groove’da kick varyasyonları.','Kick değişirken flam’ın zamanlaması aynı kalsın.',[g(H8,'K . K . . K . .','S:. . f . . . f .'),g(H8,'K K . . K . K .','S:. . f . . . f .'),g(HO,'K . . K . K . .','S:. . f . . . f .')]],
+['Hepsini birleştir','flam, ghost note ve four on the floor birlikte.','Önce eller, sonra kick; her şeyi sayarak ekle.',[g(HO,F4,'S:. . f . . g S .'),g(H8,'K . K . K . . .','S:. g S . . . f .'),g(H8,K13,'S:. g f . . g S .')]],
+['Groove’u oturt','öğrendiklerinden dengeli bir groove kurmak.','Metronomla kesintisiz çal; hiçbir uzvu öne ya da arkaya düşürme.',[g(H8,K13,'S:. g S . . g S .'),g(HO,F4,'S:. . f . . . S .'),r(F4,'S:. . S g . . S .')]]];
+return L})();
+const L4=(()=>{const H8='x x x x x x x x',H4='x . x . x . x .',H16='x x x x x x x x x x x x x x x x',E16='x . x . x . x . x . x . x . x .',W16='x . x x x . x x x . x x x . x x',D16='x x . x x x . x x x . x x x . x',S24c='S:. . c . . . c .',S16='S:. . . . S . . . . . . . S . . .',S16c='S:. . . . c . . . . . . . c . . .',K13='K . . . K . . .';
+const K1='K . . . . . . . K . . . . . . .',KB='K . . K . . . . K . . K . . . .',KA='K . . . . K . . K . . . . K . .',K5='K . K . . . K . K . . . K . . .',K6='K . . K . K . . K . K . . . . .',K7='K K . . . . . . K K . . . . . .';
+const g=(h,k,s)=>'HH:'+h+'|'+(s||'S:. . S . . . S .')+'|K:'+k,g16=(k,h,s)=>'HH:'+(h||H16)+'|'+(s||S16)+'|K:'+k,r16=(k,s)=>'Rd:'+H16+'|'+(s||S16)+'|K:'+k,r=(k,s)=>'Rd:'+H8+'|'+(s||'S:. . S . . . S .')+'|K:'+k;
+const f16=(a,o,k,m)=>'HH:'+Array.from({length:16},(_,i)=>i<(m||12)?'x':'.').join(' ')+'|S:. . . . S . . . . . . . . . . .|K:'+(k||K1)+'|'+o.map((d,j)=>d+':'+Array.from({length:16},(_,i)=>i==a[j]?'T':'.').join(' ')).join('|');
+const A1=[12,13,14],A2=[12,14,15],T3=['T1','T2','FT'],T4=['T2','T1','FT'],T5=['FT','T2','T1'];
+const CR='C:C . . . . . . . . . . . . . . .|HH:. x x x x x x x x x x x x x x x|'+S16+'|K:'+K1;
+const L=[
+['Cross-stick nedir?','snare’in kenarına “tık” diye vuran yumuşak vuruş.','Sapı rim’e vur, başa değil; groove’da snare yerine kullan.',[g(H8,K13,S24c),r(K13,S24c),g(H4,K13,S24c)]],
+['Bilek hareketi','16’lıkları kolla değil bilekle çalmak.','Bileği gevşek tut; stick’in sekmesini kullan, bastırma.',['HH:'+H16,'HH:'+H16+'|K:'+K1,g16(K1)]],
+['Backbeat’ten önce kick','kick’in snare’den bir 16’lık önce gelmesi.','Kick’i “a” ile say (1 e & a); snare hemen ardından gelsin.',[g16(KB),g16(KB,E16),g16(KB,H16,S16c)]],
+['Kitte dolaşmak','hi-hat’ten ride’a geçmek.','El yeri değişirken tempo ve snare aynı kalsın.',[g16(KB)+';'+r16(KB),g16(K1,E16)+';'+r16(K1,S16c),r16(KA)+';'+g16(KA)]],
+['Hızlı çalmanın sırrı','gevşeklik, hız değil.','Hızı artırmak yerine önce kolu rahatlat; sesin eşit kaldığını dinle.',[g16(K1),g16(KB),g16(KA)]],
+['Backbeat’ten sonra kick','kick’in snare’den bir 16’lık sonra gelmesi.','Kick’i “e” ile say; snare’den sonra hemen oturt.',[g16(KA),g16(KA,E16),g16(KA,H16,S16c)]],
+['Snare elini değiştirmek','cross-stick ve normal snare arasında geçiş.','Elin yerini önceden planla; hi-hat 16’lıkları sabit kalsın.',[g16(K1,H16,S16c),g16(KB,E16,S16c),g16(KA,H16,S16c)]],
+['Hızlanmak','aynı kalıbı kademeli hızlandırmak.','Her turda 5 bpm artır; gevşekliği koru.',[g16(K1),g16(KB),g16(KA)]],
+['Kalıpları gözden geçir','öğrendiğin üç kick kalıbını peş peşe çalmak.','Her kalıp arasında hi-hat’i bırakma.',[g16(K1)+';'+g16(KB)+';'+g16(KA),g16(KA)+';'+g16(KB)+';'+g16(K1)]],
+['Switch’e alış','kalıplar arasındaki geçişleri rahat yapmak.','Geçişte kick’in yerini önceden düşün.',[g16(KB,H16,S16c)+';'+g16(KA,H16,S16c),g16(KA,E16,S16c)+';'+g16(KB,E16,S16c)]],
+['Gevşek kal','hızlı notalarda omuz ve bileği rahat tutmak.','Nefes al; sesin eşitliği gerginlikten daha önemli.',[g16(K1),g16(K1,E16)]],
+['Kalıpları birleştir','üç kalıbı tek akışta çalmak.','Her ölçü başında kick’in yerini sayıyla bul.',[g16(KB)+';'+g16(KA)+';'+g16(K1),g16(K1)+';'+g16(KA)+';'+g16(KB)]],
+['Fill’le geçiş','16’lık groove’dan fill’e geçmek.','Fill’i 4. vuruşta başlat; groove’a kick ile dön.',[g16(K1)+';'+f16(A1,T3),g16(KB)+';'+f16(A2,T3)]],
+['Now We’re Cookin’','kalıpları ve fill’i birleştirmek.','Üç ölçüyü kesintisiz çal; tempo kaymasın.',[g16(KB)+';'+g16(KA)+';'+f16(A1,T3),g16(KA)+';'+g16(KB)+';'+f16(A2,T4)]],
+['Kitte kalıplar','ride üzerinde kick kalıpları.','Ride’ı hi-hat kadar eşit çal.',[r16(KB),r16(KA),g16(K1)+';'+r16(K1)]],
+['Lead el','ritmi taşıyan eli (hi-hat eli) güçlendirmek.','Atlanan notaları sayarken el hareketi sürsün.',[g16(K1,W16),g16(KB,D16),g16(KA,W16)]],
+['8’likten 16’lığa geçiş','8’lik groove’dan 16’lıklara akmak.','Geçişte kick ve snare aynı kalsın; sadece hi-hat sıklaşsın.',[g(H8,K13)+';'+g16(K1),g16(K1)+';'+g(H8,K13)]],
+['4-e-& fill’i','4. vuruşun ilk üç 16’lığında tom’lar.','Tom’ları 4, e, & diye sayarak çal; “a” sus.',[g16(K1)+';'+f16(A1,T3),g16(K1)+';'+f16(A1,T4),g16(KB)+';'+f16(A1,T5)]],
+['Ride’dan çalmak','16’lık ride groove’ları.','Ride’ı eşit tut; kick ve snare’i bağımsız çal.',[r16(K1),r16(KB),r16(KA,S16c)]],
+['Tek elle 16’lıklar','16’lıkları tek elle çalmak.','Sadece lead elle çal, bilekten; diğer el serbest.',['HH:'+H16+'|K:'+K1,'HH:'+H16+'|K:'+KB,'Rd:'+H16+'|K:'+KA]],
+['4-&-a fill’i','4. vuruşta “e” sus: 4, &, a.','Susu sayarak bekle; tom’ları sırayla çal.',[g16(K1)+';'+f16(A2,T3),g16(K1)+';'+f16(A2,T4),g16(KB)+';'+f16(A2,T5)]],
+['Kick’i değiştir','daha yoğun kick kalıpları.','Kick değişirken hi-hat ve snare aynı kalsın.',[g16(K5),g16(K6),g16(K7)]],
+['Crash ekle','groove’un başında crash.','Crash’ten sonra hi-hat’e hemen dön.',[g16(K1)+';'+CR,g16(KB)+';'+CR]],
+['İkisini birleştir','iki farklı fill’i peş peşe çalmak.','Fill’ler arasında groove’a bir ölçü dön.',[g16(K1)+';'+f16(A1,T3)+';'+g16(K1)+';'+f16(A2,T4),g16(KB)+';'+f16(A2,T3)+';'+g16(KA)+';'+f16(A1,T5)]],
+['Kitin her yerinde','groove, fill ve ride’ı birleştirmek.','Her ölçüde sonrakini önceden düşün.',[g16(K1)+';'+f16(A1,T3)+';'+r16(K1),r16(KB)+';'+f16(A2,T4)+';'+g16(KB)]],
+['Kick’i değiştir (2)','fill ile kick varyasyonlarını karıştırmak.','Kick’in yeni yerini önce tek başına say.',[g16(KB)+';'+f16(A1,T3,KB),g16(KA)+';'+f16(A2,T4,KA)]],
+['İki vuruş boyunca çal','fill’i iki vuruşa yaymak.','Fill’in sonunda crash’e git; groove’a geri dön.',[g16(K1)+';'+f16([8,10,12,14],['T1','T2','FT','C'],K1,8),g16(KB)+';'+f16([8,10,12,14],['T2','T1','FT','C'],KB,8)]],
+['Her şeyi aynı anda değiştir','kick, hi-hat ve snare’i aynı anda değiştirmek.','Önce eller, sonra kick; sayıyı kaybetme.',[g16(KB,W16,S16c),g16(KA,D16,S16c),g16(K6,W16)]],
+['Kitin etrafında çalmak','öğrendiklerinin hepsiyle akıcı bir geçiş.','Groove, fill, ride: tempo kaymadan uçtan uca çal.',[r16(KB)+';'+f16(A1,T3,KB)+';'+g16(KA),g16(KA)+';'+f16(A2,T4,KA)+';'+r16(KB)]]];
+return L})();
+const L5=(()=>{const H8='x x x x x x x x',H4='x . x . x . x .',H6='x x x x x x',H12='x x x x x x x x x x x x',K13='K . . . K . . .',S8='S:. . S . . . S .',S6='S:. . . S . .',S12='S:. . . S . . . . . S . .',K6='K . . . . .',K12='K . . . . . K . . . . .';
+const O1=['S','T1','T2','FT'],O2=['T1','T2','FT','S'],O3=['FT','T2','T1','S'];
+const g=(h,k,s)=>'HH:'+h+'|'+(s||S8)+'|K:'+k,r=(k,s)=>'Rd:'+H8+'|'+(s||S8)+'|K:'+k,g6=(h,k,s)=>'HH:'+h+'|'+(s||S6)+'|K:'+k,g12=(h,k,s)=>'HH:'+h+'|'+(s||S12)+'|K:'+k;
+const fl=(o,n,l)=>o.map((d,j)=>d+':'+Array.from({length:n*4},(_,i)=>Math.floor(i/n)==j?'T':'.').join(' ')).join('|')+'|l:'+(l||Array.from({length:n*4},(_,i)=>i%2?'L':'R').join(' '));
+const fl8=o=>fl(o,2),fl16=o=>fl(o,4),fl12=o=>fl(o,3,'R L R L R L R L R L R L');
+const fp=m=>[...new Set(m)].map(d=>d+':'+m.map(x=>x==d?'T':'.').join(' ')).join('|')+'|l:R L R R L R L L';
+const C6='C:. . . C . .|HH:x x x . x x|S:. . . . . .|K:K . . K . .',C6b='C:. C . . . .|HH:x . x x x x|'+S6+'|K:'+K6;
+const L=[
+['6/8 nedir?','bir ölçüde altı 8’lik, üçerli iki grup.','“1 2 3 4 5 6” say; kick 1’de, snare 4’te.',[g6(H6,K6),g6(H6,'K . . . . K'),g6('x . x x . x',K6)]],
+['4. vuruşta crash','6/8 ölçüsünün ikinci grubunun başında crash.','Crash’ten sonra hi-hat’e hemen dön.',[g6(H6,K6)+';'+C6,g6(H6,'K . . . . K')+';'+C6]],
+['6/8 groove’u','6/8’de oturmuş groove.','Sayımı “1 la li 2 la li” diye yap; groove’u salla.',[g6(H6,K6),g6(H6,'K . . . . K'),g6('x . x x . x',K6)]],
+['2. vuruşta crash','crash’i 2. 8’liğe koymak.','Crash’i yukarıdan kes; hi-hat’e geri dön.',[g6(H6,K6)+';'+C6b,g6('x . x x . x','K . . . . K')+';'+C6b]],
+['Elleri ayır','sağ elin ritmi, sol elin ritminden bağımsız.','Sağ eli sabit tut; sol elin yeri değişsin.',[g6('x . x x . x',K6,'S:. . . S . .'),g6('x x . x x .',K6,'S:. . . S . S'),g6(H6,K6,'S:. S . S . .')]],
+['Crash ekle','groove’un başına crash koymak.','Crash’ten sonra hi-hat’i hemen devam ettir.',['C:C . . . . .|HH:. x x x x x|'+S6+'|K:'+K6,g6(H6,K6)+';C:C . . . . .|HH:. x x x x x|'+S6+'|K:'+K6]],
+['Crash “&” konumunda','crash’i grubun son 8’liğine koymak.','Crash’i üçlü grubun üçüncü notasında çal.',['C:. . C . . C|HH:x x . x x .|'+S6+'|K:'+K6,g6(H6,K6)+';C:. . C . . .|HH:x x . x x x|'+S6+'|K:'+K6]],
+['Backbeat ekle','6/8’de snare vuruşlarını eklemek.','Snare’i net çal; hi-hat ve kick aynı kalsın.',[g6(H6,K6,'S:. . . S . .'),g6(H6,'K . . . . K','S:. . . S . S'),g6(H6,K6,'S:. S . S . .')]],
+['12/8 nedir?','bir ölçüde on iki 8’lik, üçerli dört grup.','“1 la li 2 la li…” say; kick 1 ve 3’te, snare 2 ve 4’te.',[g12(H12,K12),g12(H12,'K . . . . . K . . . . K'),g12('x . x x . x x . x x . x',K12)]],
+['Buildup ekle','12/8’de snare’i yoğunlaştırarak gerilim kurmak.','Yoğunluğu ölçü ölçü artır; hi-hat sabit.',[g12(H12,K12)+';'+g12(H12,K12,'S:. . . S . . . S . S . S')]],
+['Fill’i getir','12/8’de tom’larla fill.','Her tom bir grup; fill’den sonra groove’a kick ile dön.',[g12(H12,K12)+';'+fl12(O1),g12(H12,K12)+';'+fl12(O2)]],
+['Hızlan','12/8’de tempoyu artırmak.','Gevşeklik önce, hız sonra.',[g12(H12,K12),g12(H12,'K . . . . . K . . . . K')]],
+['Her yerde crash','12/8’de crash’leri dağıtmak.','Crash’leri gruplarla say; hi-hat eksilmesini sabırla bekle.',['C:C . . C . . C . . C . .|HH:. x x . x x . x x . x x|S:. . . . . . . . . . . .|K:'+K12,g12(H12,K12)+';C:C . . . . . C . . . . .|HH:. x x x x x . x x x x x|'+S12+'|K:'+K12]],
+['Paradiddle fill’leri','paradiddle sticking’iyle kitte dolaşmak.','Sticking’i bozma; her ses farklı davula gitsin.',[g(H8,K13)+';'+fp(['S','S','T1','T1','T2','T2','FT','FT']),g(H8,K13)+';'+fp(['T1','S','T2','S','FT','S','T1','S'])]],
+['8’lik fill','8’lik notalarla tek ölçü fill.','Tempoyu bozma; groove’a kick ile dön.',[g(H8,K13)+';'+fl8(O1),r(K13)+';'+fl8(O2),g(H8,K13)+';'+fl8(O3)]],
+['Rimshot nedir?','stick’in hem başa hem rim’e vurduğu sert vurgu.','Stick’i düz vur: başa ve rim’e aynı anda.',[g(H8,K13,'S:. . r . . . r .'),g(H4,K13,'S:. . r . . . r .'),g(H8,'K . . K K . . .','S:. . r . . . r .')]],
+['Yavaş giriş','rimshot’a tek vuruşla başlamak.','Önce sadece 4. vuruşta rimshot; sesi duy, rim’e vur.',[g(H8,K13,'S:. . S . . . r .'),g(H8,K13,'S:. . r . . . S .'),g(H8,K13,'S:. . S . . . r r')]],
+['İkiye katla','rimshot’ları çift çalmak.','İkinci rimshot’ı da aynı güçte çal.',[g(H8,K13,'S:. . r r . . r r'),g(H8,K13,'S:. . r . . r r .'),g(H8,K13,'S:r . r . r . r .')]],
+['Groove’larda rimshot','rimshot’u groove’a yerleştirmek.','Groove’un geri kalanı sabit; sadece snare sesi sertleşsin.',[g(H8,K13,'S:. . r . . . r .'),r(K13,'S:. . r . . . r .'),g(H8,'K . . K K . . .','S:. . r . . . r .')]],
+['Yeni fill','tom sırasını değiştirmek.','Her davula eşit zaman ver; ses perdesi akışı izlesin.',[g(H8,K13)+';'+fl8(O2),g(H8,K13)+';'+fl8(O3),r(K13)+';'+fl8(O1)]],
+['16’lık fill','16’lık notalarla fill.','Her tom dört vuruş; kolu önceden yönlendir.',[g(H8,K13)+';'+fl16(O1),g(H8,K13)+';'+fl16(O2),g(H8,K13)+';'+fl16(O3)]],
+['Tom’larla rimshot','rimshot ile tom vuruşlarını karıştırmak.','Rimshot ve tom’u ayrı ayrı say; sonra birleştir.',[g(H8,K13,'S:. . r . . . . .|T1:. . . . . . T .'),g(H8,K13,'S:. . r . . . . .|FT:. . . . . . T .'),g(H8,K13,'S:. . . . . . r .|T2:. . T . . . . .')]],
+['Tom’ları getir','groove’a tom ve rimshot eklemek.','Elin yolunu önceden planla.',[g(H8,K13,'S:. . r . . . . .|T1:. . . . . . T .'),g(H8,K13,'S:. . r . . . r .|T2:. . . T . . . .'),g(H8,'K . . K K . . .','S:. . r . . . . .|FT:. . . . . T . .')]],
+['İki vuruş için fill','fill’i ölçünün son iki vuruşuna sığdırmak.','Groove’u iki vuruş çal; fill’i 3. vuruşta başlat.',['HH:x x x x . . . .|S:. . S . . . . .|K:K . . . . . . .|T1:. . . . T . . .|T2:. . . . . T . .|FT:. . . . . . T T','HH:x x x x . . . .|S:. . S . . . . .|K:K . . . . . . .|FT:. . . . T . . .|T2:. . . . . T . .|T1:. . . . . . T T']],
+['Rimshot’ta rahatlama','rimshot’u gevşek çalmak.','Omuz ve bilek rahat; sert vuruş kolla değil stick’le gelsin.',[g(H8,K13,'S:. . r . . . r .'),g(H8,'K . K . K . . .','S:. . r . . . r .'),r('K . . . K K . .','S:. . r . . . r .')]],
+['Başka yeni bir fill','paradiddle ve tom fill’leri karıştırmak.','İki fill’i arka arkaya çal; geçişte tempo kaymasın.',[g(H8,K13)+';'+fp(['S','T1','S','T2','S','FT','S','FT'])+';'+g(H8,K13),g(H8,K13)+';'+fl8(O3)+';'+g(H8,K13)]],
+['Groove’u çeşitlendir','rimshot ve kick’le groove varyasyonları.','Değişen kick’i önce tek başına say.',[g(H8,'K . K . . K . .','S:. . r . . . r .'),g(H8,'K K . . K . K .','S:. . r . . . S r'),r('K . . K K . . .','S:. . r . . . r .')]],
+['Fill araç kutusu','öğrendiğin tüm fill’leri sırayla çalmak.','Her fill arasında bir ölçü groove; tempo sabit.',[g(H8,K13)+';'+fl8(O1)+';'+g(H8,K13)+';'+fl16(O2),g(H8,K13)+';'+fp(['S','S','T1','T1','T2','T2','FT','FT'])+';'+g(H8,K13)+';'+fl8(O3)]]];
+return L})();
+const L0=(()=>{const M=(n,st,o)=>{o=o||{};const s=st.split(' '),t=[],l=[];let c=0;for(let i=0;i<n;i++){if(o.r&&o.r.includes(i)){t.push('.');l.push('.');continue}l.push(s[c++%s.length]);t.push(o.a&&o.a.includes(i)?'A':(o.z===true||o.z&&o.z.includes(i))?'z':o.s?'g':'S')}return'S:'+t.join(' ')+'|l:'+l.join(' ')};
+const A8=[0,1,2,3,4,5,6,7],PD='R L R R L R L L',PL='L R L L R L R R',D1='L R R L R L L R',D2='R R L R L L R L',D3='R L R L L R L R',DP='R L R L R R L R L R L L',DL='L R L R L L R L R L R R',TP='R L R L R L R R L R L R L R L L',TL='L R L R L R L L R L R L R L R R';
+const fp=m=>[...new Set(m)].map(d=>d+':'+m.map(x=>x==d?'T':'.').join(' ')).join('|')+'|l:R L R R L R L L',gg=k=>'HH:x x x x x x x x|S:. . S . . . S .|K:'+k;
+const J=(...a)=>a.join(';');
+const L=[
+['Tek el rebound','stick’in kendiliğinden sekmesi.','Her vuruşu aynı yükseklikten bırak, bastırma; ses eşit olsun.',[M(4,'R'),M(4,'L'),M(8,'R'),M(8,'L'),M(8,'R R R R L L L L')]],
+['Dönüşümlü rebound','iki elin sırayla, eşit sekmesi.','Her elin sekmesini ayrı hisset; yükseklik aynı kalsın.',[M(4,'R L'),M(4,'L R'),M(8,'R L'),M(8,'L R'),M(8,'R L',{s:true})]],
+['Vurgu 1’de','vurgulu vuruşla hafif vuruşlar arasındaki yükseklik farkı.','Vurguyu yüksekten çal, hemen alçağa dön; hafifler küçük hareketle.',[M(8,'R L',{a:[0],s:true}),M(8,'R L',{a:[0,4],s:true}),M(8,'L R',{a:[0],s:true}),M(8,'L R',{a:[0,4],s:true}),M(8,'R L',{a:[0,2,4,6],s:true})]],
+['Vurgu konumları','vurgunun ölçüdeki yerini değiştirmek.','Vurgu gelmeden önceki vuruşta stick’i yukarı hazırla.',[M(8,'R L',{a:[2,6],s:true}),M(8,'R L',{a:[1,5],s:true}),M(8,'R L',{a:[3,7],s:true}),M(8,'R L',{a:[0,3,6],s:true}),M(8,'R L',{a:[1,4,7],s:true})]],
+['Sağ ve sol vurgulu','vurguyu hep aynı elde tutmak.','Zayıf elde vurguyu kontrol et; hafif vuruşlar net kalsın.',[M(8,'R L',{a:[0,2,4,6],s:true}),M(8,'R L',{a:[1,3,5,7],s:true}),M(16,'R L',{a:[0,4,8,12],s:true}),M(16,'R L',{a:[2,6,10,14],s:true}),M(16,'R L',{a:[1,5,9,13],s:true})]],
+['Dinamik geçişler','hafiften vurguluya geçerken tempoyu korumak.','Her ölçü başında dinamiği değiştir; hızlanma.',[J(M(8,'R L',{s:true}),M(8,'R L')),J(M(8,'R L'),M(8,'R L',{a:A8})),J(M(8,'R L',{s:true}),M(8,'R L'),M(8,'R L',{a:A8})),J(M(16,'R L',{s:true}),M(16,'R L')),J(M(8,'L R',{s:true}),M(8,'L R'))]],
+['Rebound + sus','sus yerlerinde elin havada hazır kalması.','Susları say; sus sırasında stick yukarıda hazır beklesin.',[M(8,'R L',{r:[1,3,5,7]}),M(8,'R L',{r:[2,3,6,7]}),M(8,'L R',{r:[1,3,5,7]}),M(8,'R L',{r:[3,7]}),M(16,'R L',{r:[1,3,5,7,9,11,13,15]})]],
+['16’lık rebound','16’lıklarda küçük, hızlı sekme.','Bileği gevşek tut; hareketi küçült.',[M(16,'R L'),M(16,'L R'),M(16,'R L',{a:[0,4,8,12],s:true}),M(16,'R L',{a:[0,8],s:true}),M(16,'R L',{a:[0],s:true})]],
+['Single 8’lik','sağ-sol dönüşümlü 8’likler.','Zayıf eli dinle; ses ve yükseklik eşit olsun.',[M(8,'R L'),M(8,'L R'),M(8,'R L',{a:[0,4]}),M(8,'R L',{a:[0,2,4,6]}),M(8,'L R',{a:[0,4]})]],
+['Single 16’lık','16’lıklarda eşit single stroke.','Küçük hareketler, bilekten; hızı değil eşitliği ara.',[M(16,'R L'),M(16,'L R'),M(16,'R L',{a:[0,4,8,12]}),M(16,'R L',{a:[0,8]}),M(16,'L R',{a:[0,4,8,12]})]],
+['Single’da vurgu konumu','vurguyu 16’lığın farklı yerlerine koymak.','Sadece vurguyu yüksekten çal; sayıyı yüksek sesle say.',[M(16,'R L',{a:[1,5,9,13]}),M(16,'R L',{a:[2,6,10,14]}),M(16,'R L',{a:[3,7,11,15]}),M(16,'R L',{a:[0,3,6,9,12,15]}),M(16,'R L',{a:[0,5,10,15]})]],
+['Single + sus','susla bölünen single stroke.','El sırası susla değişmesin; susları say.',[M(8,'R L',{r:[2,5]}),M(8,'R L',{r:[1,6]}),M(8,'R L',{r:[3,4]}),M(8,'R L',{r:[0,4]}),M(8,'R L',{r:[1,2,5,6]})]],
+['Double 8’lik','her elde iki vuruş: RRLL.','İkinci vuruşu sekmeye bırak; ses eşit olsun.',[M(8,'R R L L'),M(8,'L L R R'),M(8,'R R L L',{a:[0,4]}),M(8,'R R L L',{a:[0,2,4,6]}),M(8,'R R L L',{a:[1,3,5,7]})]],
+['Double 16’lık','16’lıklarda double stroke.','Yavaş başla; ikinci vuruş birinciden zayıf kalmasın.',[M(16,'R R L L'),M(16,'L L R R'),M(16,'R R L L',{a:[0,4,8,12]}),M(16,'R R L L',{a:A8.map(x=>x*2)}),M(16,'R R L L',{a:[1,5,9,13]})]],
+['Double + sus','double stroke’u susla bölmek.','Çiftleri sayarak çal; susta eller hazır beklesin.',[M(8,'R R L L',{r:[2,3,6,7]}),M(8,'R R L L',{r:[1,3,5,7]}),M(8,'R R L L',{r:[3,7]}),M(8,'R R L L',{r:[1,5]}),M(8,'R R L L',{r:[0,4]})]],
+['Tekli ve çiftli','single ile double arasında geçiş.','Geçişte ritim ve sesin eşit kalmasını dinle.',[M(8,'R L R L R R L L'),M(8,'R R L L R L R L'),M(16,'R L R L R R L L'),M(16,'R R L L R L R L'),M(8,'L R L R L L R R')]],
+['Çift–tekli dönüşümlü','16’lıklarda double ve single karışık.','Her grubu ayrı say; sticking’e güven.',[M(16,'R R L L R L R L'),M(16,'R L R L R R L L'),M(16,'R R L R L L R L'),M(16,'R L R R L R L L'),M(16,'L L R R L R L R')]],
+['Single, double, single','tek ve çift vuruşu ölçüler boyunca geçirmek.','Ölçü geçişinde tempo kaymasın.',[J(M(8,'R L'),M(8,'R R L L')),J(M(8,'R R L L'),M(8,'R L')),J(M(8,'R L'),M(16,'R L')),J(M(16,'R L'),M(16,'R R L L')),J(M(8,'L R'),M(8,'L L R R'))]],
+['Hafif çiftler','hafif double stroke: kontrol.','Hafif vuruşları küçük yükseklikle, eşit çal.',[M(8,'R R L L',{s:true}),M(16,'R R L L',{s:true,a:[0,8]}),M(8,'R R L L',{s:true,a:[0,4]}),M(16,'L L R R',{s:true,a:[0,4,8,12]}),M(8,'R R L L',{s:true,a:[2,6]})]],
+['Sol elle double','zayıf elde double stroke.','Sol elle başla; ikinci vuruşu sekmeden al.',[M(8,'L L R R'),M(16,'L L R R'),M(8,'L L R R',{a:[0,4]}),M(16,'L L R R',{a:[0,4,8,12]}),M(8,'L R R L')]],
+['Buzz 4’lük','her vuruşta buzz (çoklu sekme).','Stick’i bastırmadan sekmesine izin ver; sürekli bir “vızıltı” çıksın.',[M(4,'R L',{z:true}),M(4,'L R',{z:true}),M(4,'R',{z:true}),M(4,'L',{z:true}),M(4,'R L',{z:true,a:[0]})]],
+['Buzz 8’lik','8’lik notalarda buzz.','Bir buzz bitmeden diğeri başlasın.',[M(8,'R L',{z:true}),M(8,'L R',{z:true}),M(8,'R L',{z:true,a:[0,4]}),M(8,'R L',{z:true,a:[0,2,4,6]}),M(8,'L R',{z:true,a:[0,4]})]],
+['Buzz + tap','buzz ve normal vuruşu karıştırmak.','Buzz’dan tap’e geçerken el hareketini küçük tut.',[M(8,'R L',{z:[0,2,4,6]}),M(8,'R L',{z:[1,3,5,7]}),M(8,'R L',{z:[0,4]}),M(16,'R L',{z:[0,4,8,12]}),M(16,'R L',{z:[0,8]})]],
+['Buzz + sus','buzz’ı susla bölmek.','Buzz’ı net başlat ve bitir.',[M(8,'R L',{z:true,r:[1,3,5,7]}),M(8,'R L',{z:true,r:[2,3,6,7]}),M(8,'R L',{z:true,r:[3,7]}),M(8,'R L',{z:true,r:[1,5]}),M(8,'L R',{z:true,r:[1,3,5,7]})]],
+['Buzz’ı double ile bağla','buzz’dan double stroke’a geçmek.','İki tekniğin aynı sekmeyi kullandığını hisset.',[J(M(8,'R L',{z:true}),M(8,'R R L L')),J(M(8,'R R L L'),M(8,'R L',{z:true})),J(M(8,'L R',{z:true}),M(8,'L L R R')),J(M(8,'R L',{z:true}),M(16,'R R L L')),J(M(16,'R R L L'),M(8,'R L',{z:true}))]],
+['Buzz’dan vurguya','buzz notalarından sonra vurgulu vuruş.','Buzz’tan vurguya sert geçme; kontrollü bırak.',[M(8,'R L',{z:[1,2,3,5,6,7],a:[0,4]}),M(8,'R L',{z:[0,1,3,4,5,7],a:[2,6]}),M(8,'L R',{z:[1,2,3,5,6,7],a:[0,4]}),M(16,'R L',{z:[1,2,3,5,6,7,9,10,11,13,14,15],a:[0,4,8,12]}),M(8,'R L',{z:[0,1,2,4,5,6],a:[3,7]})]],
+['Buzz 16’lık','16’lıklarda buzz.','Tempoyu düşür; buzz’ın sürekliliğini koru.',[M(16,'R L',{z:true}),M(16,'R L',{z:[0,4,8,12]}),M(16,'L R',{z:true}),M(16,'R L',{z:[0,2,4,6,8,10,12,14]}),M(16,'R L',{z:[0,8]})]],
+['Buzz ve single karışık','buzz grupları ile single’ı birleştirmek.','Geçişte el sırasını bozma.',[M(8,'R L',{z:[0,1,2,3]}),M(8,'R L',{z:[4,5,6,7]}),M(8,'R L',{z:[0,1,4,5]}),M(8,'R L',{z:[2,3,6,7]}),M(8,'R L',{z:[0,3,4,7]})]],
+['Paradiddle 8’lik','RLRR LRLL: tekli ve çiftli vuruşun birleşimi.','Sticking’e güven; çiftlerde ikinci vuruşu sekmeye bırak.',[M(8,PD),M(8,PL),M(8,PD,{a:[0,4]}),M(8,PD,{a:[0,4],s:true}),M(8,PL,{a:[0,4],s:true})]],
+['Paradiddle 16’lık','16’lıklarda paradiddle.','Önce yavaş; her grubun ilk vuruşu aynı seviyede.',[M(16,PD),M(16,PL),M(16,PD,{a:[0,4,8,12]}),M(16,PD,{a:[0,8]}),M(16,PD,{a:[0,4,8,12],s:true})]],
+['Paradiddle vurgusu','vurguyu paradiddle içinde taşımak.','Her seferinde sadece vurgunun yerine odaklan.',[M(8,PD,{a:[2,3,6,7]}),M(8,PD,{a:[0,1,4,5]}),M(8,PD,{a:[3,7]}),M(8,PD,{a:[1,3,5,7]}),M(8,PD,{a:[0,2,4,6]})]],
+['Paradiddle + sus','paradiddle’ı susla bölmek.','Sus yerinde el sırası değişmesin.',[M(8,PD,{r:[1,5]}),M(8,PD,{r:[3,7]}),M(8,PD,{r:[2,6]}),M(8,PD,{r:[1,3,5,7]}),M(16,PD,{r:[3,7,11,15]})]],
+['Paradiddle kaydırma 1','paradiddle’ı bir nota kaydırmak: LRRL RLLR.','Yeni vurgu yerini sayarak hisset.',[M(8,D1),M(8,'R L L R L R R L'),M(16,D1),M(8,D1,{a:[0,4]}),M(8,D1,{a:[1,5],s:true})]],
+['Paradiddle kaydırma 2','paradiddle’ı iki nota kaydırmak: RRLR LLRL.','Çift vuruş başlangıcı: ikinci vuruşa sekme.',[M(8,D2),M(8,'L L R L R R L R'),M(16,D2),M(8,D2,{a:[0,4]}),M(8,D2,{a:[2,6],s:true})]],
+['Paradiddle kaydırma 3','paradiddle’ı üç nota kaydırmak: RLRL LRLR.','Tek–tek–çift ritmini yakala.',[M(8,D3),M(8,'L R L R R L R L'),M(16,D3),M(8,D3,{a:[0,4]}),M(8,D3,{a:[3,7],s:true})]],
+['Çift paradiddle','RLRLRR LRLRLL: 12 nota, 12/8 ölçüde.','Üçlü gruplar halinde say: 1 la li, 2 la li…',[M(12,DP),M(12,DL),M(12,DP,{a:[0,6]}),M(12,DP,{a:[0,6],s:true}),M(12,DP,{a:[4,5,10,11]})]],
+['Üçlü paradiddle','RLRLRLRR: sekiz notalık grup.','Tekli notaları rahat çal, sondaki çifti sekmeye bırak.',[M(16,TP),M(16,TL),M(16,TP,{a:[0,8]}),M(16,TP,{a:[0,8],s:true}),M(16,TL,{a:[0,8]})]],
+['Paradiddle-diddle','RLRRLL: tek tek çift çift; 12/8 ölçüde.','İki çifti sırayla sekmeye bırak.',[M(12,'R L R R L L'),M(12,'L R L L R R'),M(12,'R L R R L L',{a:[0,6]}),M(12,'R L R R L L',{a:[0,3,6,9]}),M(12,'R L R R L L',{a:[0,6],s:true})]],
+['Paradiddle fill’leri','paradiddle sticking’ini kitte dolaştırmak.','Sticking’i bozma; her ses farklı davula gitsin.',[J(gg('K . . . K . . .'),fp(['S','S','T1','T1','T2','T2','FT','FT'])),J(gg('K . . . K . . .'),fp(['T1','S','T2','S','FT','S','T1','S'])),J(gg('K . . . K . . .'),fp(['S','T1','S','T2','S','FT','S','FT'])),J(gg('K . . . K . . .'),fp(['FT','T2','T1','S','FT','T2','T1','S'])),J(gg('K . . . K . . .'),fp(['T1','T1','T2','T2','FT','FT','S','S']))]],
+['Paradiddle groove’da','groove’dan paradiddle fill’e ve geri.','Fill’den sonra ilk vuruşta kick ve hi-hat birlikte dönsün.',[J(gg('K . . . K . . .'),fp(['S','T1','S','T2','S','FT','S','FT']),gg('K . . . K . . .')),J(gg('K . . K K . . .'),fp(['T1','T1','S','S','T2','T2','FT','FT']),gg('K . . K K . . .')),J(gg('K . K . K . . .'),fp(['S','S','T1','T1','T2','T2','FT','FT'])),J(gg('K . . . K . . .'),fp(['FT','S','T2','S','T1','S','FT','S'])),J(gg('K . . K K . . .'),fp(['S','S','S','T1','T2','T2','FT','FT']))]]];
+return L})();
+const L6=(()=>{const Q=s=>s.split('|').map(b=>{const t=[],l=[];b.trim().split(/\s+/).forEach(k=>{if(k=='.'){t.push('.');l.push('.');return}if(/^[lr]$/.test(k)){t.push('g');l.push(k);return}const m=/^([lr]{0,2})([LR])(>?)(z?)$/.exec(k),g=m[1].length;t.push(g==1?'f':g==2?'d':m[4]?'z':m[3]?'A':'S');l.push(m[1]+m[2])});return'S:'+t.join(' ')+'|l:'+l.join(' ')}).join(';');
+const mi=s=>s.replace(/[lrLR]/g,c=>({l:'r',r:'l',L:'R',R:'L'})[c]),so=s=>s.replace(/(^|\s)([LR])>?(?=\s|$)/g,(m,a,c)=>a+c.toLowerCase());
+const Y='Yavaştan hıza, sonra yine yavaşa çal; sticking’e ve eşit sese dikkat et. Ritim sadeleştirildi; resmi notasyon için PAS listesine bak.';
+const RU=(t,o,k)=>[t,o,Y,[Q(k),Q(mi(k)),Q(k)+';'+Q(mi(k)),Q(so(k)),Q(so(mi(k)))]];
+const L=[
+RU('Single stroke roll','dönüşümlü, eşit aralıklı vuruşlar.','R L R L R L R L R L R L R L R L'),
+RU('Single stroke four','dört vuruşluk grup, sonuncusu vurgulu.','R L R L> . . . . . . . .'),
+RU('Single stroke seven','yedi vuruş, sonuncusu vurgulu.','R L R L R L R> . . . . .'),
+RU('Multiple bounce roll','her vuruşta çoklu sekme (buzz roll).','Rz Lz Rz Lz Rz Lz Rz Lz'),
+RU('Triple stroke roll','her elde üç vuruş (French roll).','R R R L L L R R R L L L'),
+RU('Double stroke open roll','çiftli vuruşlarla açık roll.','R R L L R R L L R R L L R R L L'),
+RU('Five stroke roll','iki çift ve vurgulu bir vuruş.','R R L L R> . . . L L R R L> . . .'),
+RU('Six stroke roll','vurgulu tek, iki çift, vurgulu tek.','R> L L R R L> . . L> R R L L R> . .'),
+RU('Seven stroke roll','üç çift ve vurgulu vuruş.','R R L L R R L> . L L R R L L R> .'),
+RU('Nine stroke roll','dört çift ve vurgulu vuruş.','R R L L R R L L R> . . . . . . .'),
+RU('Ten stroke roll','dört çift ve iki vurgulu vuruş.','R R L L R R L L R> L> . . . . . .'),
+RU('Eleven stroke roll','beş çift ve vurgulu vuruş.','R R L L R R L L R R L> . . . . .'),
+RU('Thirteen stroke roll','altı çift ve vurgulu vuruş.','R R L L R R L L R R L L R> . . .'),
+RU('Fifteen stroke roll','yedi çift ve vurgulu vuruş.','R R L L R R L L R R L L R R L> .'),
+RU('Seventeen stroke roll','sekiz çift ve vurgulu vuruş (iki ölçü).','R R L L R R L L R R L L R R L L|R> . . . . . . . . . . . . . . .'),
+RU('Single paradiddle','iki tekli vuruş ve bir çift.','R L R R L R L L R L R R L R L L'),
+RU('Double paradiddle','dört tekli vuruş ve bir çift (12/8).','R L R L R R L R L R L L'),
+RU('Triple paradiddle','altı tekli vuruş ve bir çift.','R L R L R L R R L R L R L R L L'),
+RU('Paradiddle-diddle','iki tekli ve iki çift (12/8).','R L R R L L R L R R L L'),
+RU('Flam','grace note + ana vuruş: tek kalın ses.','lR rL lR rL'),
+RU('Flam accent','flam, tap, tap: üçlü gruplar (12/8).','lR L R rL R L lR L R rL R L'),
+RU('Flam tap','çift vuruşların ilkinde flam.','lR R rL L lR R rL L lR R rL L lR R rL L'),
+RU('Flamacue','flam, vurgulu ikinci vuruş, sonda flam.','lR L> R L lR . . . rL R> L R rL . . .'),
+RU('Flam paradiddle','paradiddle’ın ilk vuruşunda flam.','lR L R R rL R L L lR L R R rL R L L'),
+RU('Single flammed mill','ters paradiddle, çiftin ilkinde flam.','lR R L R rL L R L lR R L R rL L R L'),
+RU('Flam paradiddle-diddle','paradiddle-diddle’ın ilkinde flam (12/8).','lR L R R L L lR L R R L L'),
+RU('Pataflafla','dört vuruş, ilk ve sonda flam.','lR L R rL lR L R rL lR L R rL lR L R rL'),
+RU('Swiss army triplet','flam, aynı elde tap, karşı elde tap (12/8).','lR R L lR R L lR R L lR R L'),
+RU('Inverted flam tap','flam, tap, flam, tap: ters düzen.','lR L rL R lR L rL R lR L rL R lR L rL R'),
+RU('Flam drag','flam, drag, tap (6/8).','lR rrL R rL llR L'),
+RU('Drag (ruff)','iki ince grace note ve ana vuruş.','llR rrL llR rrL'),
+RU('Single drag tap','drag’li vuruş ve vurgulu ikinci vuruş.','llR L> rrL R>'),
+RU('Double drag tap','tek drag tap’ten önce bir drag daha (6/8).','llR rrL R> . . .'),
+RU('Lesson 25','drag’li ilk vuruş, vurgulu üçüncü vuruş (6/8).','llR L R> . . .'),
+RU('Single dragadiddle','ilk vuruşu drag olan paradiddle.','llR L R R rrL R L L'),
+RU('Drag paradiddle No. 1','vurgulu vuruş + drag’li paradiddle (6/8).','R> rrL R L L .'),
+RU('Drag paradiddle No. 2','iki vurgulu vuruş + drag’li paradiddle (6/8).','R> rrL> llR L R R'),
+RU('Single ratamacue','ilk vuruşu drag, dördüncüsü vurgulu.','llR L R L> . . . .'),
+RU('Double ratamacue','tek ratamacue’dan önce bir drag daha.','llR rrL R L R> . . .'),
+RU('Triple ratamacue','tek ratamacue’dan önce iki drag daha.','llR rrL llR rrL R L R> .')];
+return L})();
+const SD=[L0,L1,L2,L3,L4,L5,L6];
+const $=s=>document.querySelector(s),SP=6,XS={4:46,6:36,8:30,12:22,16:17},CN={4:'1 2 3 4',6:'1 la li 2 la li',12:'1 la li 2 la li 3 la li 4 la li',8:'1 & 2 & 3 & 4 &',16:'1 e & a 2 e & a 3 e & a 4 e & a'};
+const ST={HH:9,Rd:8,C:10,T1:7,T2:6,S:5,FT:3,K:1,F:-1},UP=['HH','Rd','C','T1','T2','S','FT'],DN=['K','F'],XH={HH:1,Rd:1,C:1,F:1};
+let ln=0,sc=0,cur=null,AC,NB,pl=null;const bpm=$('#bpm'),eb=()=>bpm.value*($('#hf').checked?.5:1);
+function sh(){$('#bo').textContent=Math.round(eb())+' bpm'}bpm.oninput=sh;$('#hf').onchange=sh;
+const rng=s=>()=>{s|=0;s=s+1831565813|0;let t=Math.imul(s^s>>>15,1|s);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296};
+function gen(i,seed){const[t,f,y,p]=SD[sc][i],r=rng(seed+i*97);let bars;
+if(typeof p=='number'){const o=['S','T1','T2','FT'];if(seed)o.sort(()=>r()-.5);const n=p*4,b={l:[]};o.forEach((d,j)=>{b[d]=Array(n).fill('.');for(let k=0;k<p;k++){b[d][j*p+k]='T';}});
+b.l=Array.from({length:n},(_,k)=>k%2?'L':'R');bars=[b];}
+else bars=P(p[seed%p.length]);
+return{t:sc+'.'+(i+1)+' '+t,f,y,bars,vi:seed%p.length,nv:p.length,bpm:(()=>{const n=Object.values(bars[0])[0].length;return n==16?50:n==6||n==12?80:60})()}}
+function rest(x,y,k){let s='<g fill="currentColor" stroke="currentColor" stroke-width="1.4">';if(k==4)return s+'<path fill="none" d="M'+(x-2)+','+(y-8)+' l5,6 l-5,5 l5,7"/></g>';
+for(let i=0;i<(k==8?1:2);i++){const dx=-2*i,dy=7*i;s+='<circle cx="'+(x-2+dx)+'" cy="'+(y-3+dy)+'" r="1.8" stroke="none"/><path fill="none" d="M'+(x+4+dx)+','+(y-6+dy)+' L'+(x-2+dx)+','+(y+7)+'"/>'}return s+'</g>'}
+function voice(bar,n,I,d,y0,X){const ev=[];for(let s=0;s<n;s++)ev.push(I.filter(i=>bar[i]&&bar[i][s]&&bar[i][s]!='.'));
+if(!ev.some(a=>a.length))return'';const Y=t=>y0-ST[t]*SP/2,rY=y0-(d<0?3:1)*SP,nb=n==6?2:4,spb=n/nb,far=d<0?Math.min:Math.max,near=d<0?Math.max:Math.min;let b='';
+for(let q=0;q<nb;q++){const sl=Array.from({length:spb},(_,k)=>q*spb+k),nt=sl.filter(s=>ev[s].length),e=s=>!ev[s].length;
+if(!nt.length)b+=rest(X(sl[0]),rY,4);else if(n!=16)sl.forEach(s=>{if(e(s))b+=rest(X(s),rY,8)});else for(const p of[0,2]){if(e(sl[p])&&e(sl[p+1]))b+=rest(X(sl[p]),rY,8);else[p,p+1].forEach(k=>{if(e(sl[k]))b+=rest(X(sl[k]),rY,16)})}
+if(!nt.length)continue;const ys=s=>ev[s].map(Y),ye0=far(...nt.flatMap(ys))+d*3.4*SP,bm=nt.length>1,sx=s=>X(s)-d*4.2;
+nt.forEach(s=>{const x=X(s),ye=bm?ye0:far(...ys(s))+d*3.4*SP;b+='<path d="M'+sx(s)+','+near(...ys(s))+' V'+ye+'" stroke="currentColor" stroke-width="1.2"/>';
+ev[s].forEach(i=>{const y=Y(i),tk=bar[i][s];if(i=='HH'&&tk=='O')b+='<circle cx="'+x+'" cy="'+(y-8)+'" r="2.6" fill="none" stroke="currentColor"/>';b+=i=='Rd'&&tk=='B'?'<path d="M'+(x-5)+','+y+' l5,-4.2 l5,4.2 l-5,4.2z" fill="currentColor"/>':XH[i]||tk=='c'?'<path d="M'+(x-4)+','+(y-3.2)+' l8,6.4 M'+(x-4)+','+(y+3.2)+' l8,-6.4" stroke="currentColor" stroke-width="1.3"/>':'<ellipse cx="'+x+'" cy="'+y+'" rx="4.4" ry="3.1" transform="rotate(-20 '+x+' '+y+')" fill="currentColor"/>';if(tk=='z')for(let q=0;q<3;q++)b+='<path d="M'+(x+.2)+','+(ye+6+q*3.4)+' l8,-3.4" stroke="currentColor" stroke-width="1.3"/>';if(tk=='r'||tk=='A')b+='<path d="M'+(x-5)+','+(ye-9)+' L'+(x+5)+','+(ye-6)+' L'+(x-5)+','+(ye-3)+'" fill="none" stroke="currentColor" stroke-width="1.3"/>';if(tk=='c')b+='<circle cx="'+x+'" cy="'+y+'" r="6.5" fill="none" stroke="currentColor"/>';if(tk=='g')b+='<text x="'+(x-11)+'" y="'+(y+5)+'" font-size="14" fill="currentColor">(</text><text x="'+(x+6)+'" y="'+(y+5)+'" font-size="14" fill="currentColor">)</text>';if(tk=='d')b+='<ellipse cx="'+(x-17)+'" cy="'+y+'" rx="3" ry="2.2" transform="rotate(-20 '+(x-17)+' '+y+')" fill="currentColor"/><ellipse cx="'+(x-10)+'" cy="'+y+'" rx="3" ry="2.2" transform="rotate(-20 '+(x-10)+' '+y+')" fill="currentColor"/><path d="M'+(x-14.4)+','+y+' V'+(y-13)+' M'+(x-7.4)+','+y+' V'+(y-13)+' M'+(x-14.4)+','+(y-12.5)+' H'+(x-7.4)+'" stroke="currentColor" stroke-width="1.2"/>';if(tk=='f')b+='<ellipse cx="'+(x-10)+'" cy="'+y+'" rx="3" ry="2.2" transform="rotate(-20 '+(x-10)+' '+y+')" fill="currentColor"/><path d="M'+(x-7.4)+','+y+' V'+(y-13)+' M'+(x-11)+','+(y-8)+' l6,-3" stroke="currentColor" stroke-width="1"/>';if(ST[i]==10)b+='<path d="M'+(x-7)+','+y+' h14" stroke="currentColor" stroke-width=".8"/>'});
+if(!bm)for(let f=0;f<(n==16?2:n==4?0:1);f++)b+='<path d="M'+sx(s)+','+(ye+d*-5.5*f)+' q1,'+(-d*5)+' 8,'+(-d*10)+'" stroke="currentColor" stroke-width="1.6" fill="none"/>'});
+if(bm){const a=sx(nt[0]),z=sx(nt[nt.length-1]);b+='<rect x="'+a+'" y="'+(d<0?ye0:ye0-3.4)+'" width="'+(z-a)+'" height="3.4" fill="currentColor"/>';
+if(n==16)nt.forEach((s,j)=>{const yy=d<0?ye0+5.5:ye0-8.5;if(nt.includes(s+1))b+='<rect x="'+sx(s)+'" y="'+yy+'" width="'+(sx(s+1)-sx(s))+'" height="3" fill="currentColor"/>';else if(!nt.includes(s-1))b+='<rect x="'+(j<nt.length-1?sx(s):sx(s)-8)+'" y="'+yy+'" width="8" height="3" fill="currentColor"/>'})}}
+return b}
+function draw(ex){const y0=80,n0=Object.values(ex.bars[0])[0].length,tt=n0==6?['6','8']:n0==12?['12','8']:['4','4'];let x=44,g=0,h='',b='';
+ex.bars.forEach((bar,bi)=>{const n=Object.values(bar)[0].length,sw=XS[n],bx=x,X=i=>bx+20+i*sw;
+for(let i=0;i<n;i++)h+='<rect class="hl" data-i="'+(g+i)+'" x="'+(X(i)-sw/2)+'" y="6" width="'+sw+'" height="124" rx="4"/>';
+b+=voice(bar,n,UP,-1,y0,X)+voice(bar,n,DN,1,y0,X);
+if(bar.l)bar.l.forEach((t,i)=>{if(t!='.')b+='<text x="'+X(i)+'" y="'+(y0+36)+'" text-anchor="middle" font-size="11" font-weight="700" fill="currentColor">'+t+'</text>'});
+CN[n].split(' ').forEach((c,i)=>{b+='<text x="'+X(i)+'" y="'+(y0+50)+'" text-anchor="middle" font-size="9" fill="var(--mut)">'+c+'</text>'});
+x+=20+n*sw+10;b+='<path d="M'+x+','+y0+' V'+(y0-4*SP)+'" stroke="currentColor" stroke-width="'+(bi==ex.bars.length-1?2.4:1)+'"/>';g+=n});
+let l='';for(let k=0;k<5;k++)l+='<path d="M0,'+(y0-k*SP)+' H'+x+'" stroke="currentColor" stroke-width=".8"/>';
+l+='<rect x="8" y="'+(y0-3*SP)+'" width="3" height="'+2*SP+'" fill="currentColor"/><rect x="15" y="'+(y0-3*SP)+'" width="3" height="'+2*SP+'" fill="currentColor"/><text x="30" y="'+(y0-2*SP-1)+'" font-size="17" font-weight="700" fill="currentColor">'+tt[0]+'</text><text x="30" y="'+(y0-1)+'" font-size="17" font-weight="700" fill="currentColor">'+tt[1]+'</text>';
+return'<svg viewBox="0 0 '+x+' 136" style="max-width:'+Math.round(x*1.6)+'px" role="img" aria-label="Notasyon">'+h+l+b+'</svg>'}
+function init(){if(AC)return;AC=new(window.AudioContext||window.webkitAudioContext)();const l=AC.sampleRate;NB=AC.createBuffer(1,l,l);const d=NB.getChannelData(0);for(let i=0;i<l;i++)d[i]=Math.random()*2-1}
+function nz(t,du,ty,f,q,v,o){const s=AC.createBufferSource();s.buffer=NB;s.loop=true;const fl=AC.createBiquadFilter();fl.type=ty;fl.frequency.value=f;fl.Q.value=q;const g=AC.createGain();g.gain.setValueAtTime(v,t);g.gain.exponentialRampToValueAtTime(.001,t+du);s.connect(fl);fl.connect(g);g.connect(o);s.start(t);s.stop(t+du+.05)}
+function tn(t,f0,f1,du,v,o,ty){const s=AC.createOscillator();s.type=ty||'sine';s.frequency.setValueAtTime(f0,t);s.frequency.exponentialRampToValueAtTime(f1,t+du);const g=AC.createGain();g.gain.setValueAtTime(v,t);g.gain.exponentialRampToValueAtTime(.001,t+du);s.connect(g);g.connect(o);s.start(t);s.stop(t+du+.05)}
+function hit(i,t,o,k){if(i=='K'){tn(t,150,45,.18,1,o);nz(t,.02,'lowpass',1500,.7,.4,o)}else if(i=='S'){if(k=='z'){nz(t,.14,'highpass',1800,.7,.55,o);nz(t+.045,.1,'highpass',1800,.7,.4,o);nz(t+.09,.08,'highpass',1800,.7,.3,o);tn(t,200,150,.09,.4,o,'triangle');return}if(k=='c'){tn(t,1700,1500,.04,.6,o,'triangle');nz(t,.03,'bandpass',2500,2,.3,o);return}const v=k=='g'?.25:k=='r'?1.35:k=='A'?1.2:1;nz(t,k=='g'?.07:.16,'highpass',1800,.7,.7*v,o);tn(t,200,150,.09,.5*v,o,'triangle');if(k=='r')tn(t,520,420,.1,.3,o,'square')}
+else if(i=='HH')nz(t,k=='O'?.4:.045,'highpass',7000,.7,.35,o);else if(i=='F')nz(t,.03,'highpass',7000,.7,.3,o);
+else if(i=='C')nz(t,1.6,'highpass',4000,.5,.5,o);else if(i=='Rd'){if(k=='B'){nz(t,.5,'bandpass',4500,2,.25,o);tn(t,1050,1000,.4,.25,o)}else nz(t,.5,'bandpass',7000,2,.25,o);tn(t,3000,2900,.2,.05,o,'square')}
+else{const f={T1:220,T2:165,FT:115}[i],v=k=='g'?.3:1;tn(t,f*1.4,f,.35,.8*v,o);nz(t,.03,'bandpass',2000,1,.2*v,o)}}
+function clk(t,a,o){const c=AC.createOscillator(),g=AC.createGain();c.frequency.value=a?1500:1000;g.gain.setValueAtTime(.25,t);g.gain.exponentialRampToValueAtTime(.001,t+.04);c.connect(g);g.connect(o);c.start(t);c.stop(t+.06)}
+function sched(ex,t0,o){const sp=60/eb(),st=[];let t=t0,g=0;ex.bars.forEach(bar=>{const n=Object.values(bar)[0].length,sd=sp*(n==6||n==12?.5:4/n);
+for(let s=0;s<n;s++){for(const i in ST)if(bar[i]&&bar[i][s]&&bar[i][s]!='.'){const k=bar[i][s];if(k=='f')hit(i,t-.04,o,'g');if(k=='d'){hit(i,t-.09,o,'g');hit(i,t-.05,o,'g')};hit(i,t,o,k)};if($('#ck').checked&&s%(n==6||n==12?3:n/4)==0)clk(t,s==0,o);st.push({t,g:g++});t+=sd}});return{st,len:t-t0}}
+function stop(){if(!pl)return;const m=pl.m;cancelAnimationFrame(pl.raf);clearInterval(pl.iv);m.gain.value=0;setTimeout(()=>m.disconnect(),60);document.querySelectorAll('.hl.on').forEach(e=>e.classList.remove('on'));$('#pb').textContent='▶ Çal';pl=null}
+const hn=()=>{if(AC.getOutputTimestamp){const o=AC.getOutputTimestamp();if(o.contextTime)return o.contextTime+(performance.now()-o.performanceTime)/1000}return AC.currentTime-(AC.outputLatency||0)-(AC.baseLatency||0)};
+function play(){if(pl){stop();return}init();AC.resume();const m=AC.createGain();m.gain.value=.85;m.connect(AC.destination);const sp=60/eb();let t0=AC.currentTime+.12;
+if($('#ci').checked){for(let i=0;i<4;i++)clk(t0+i*sp,i==0,m);t0+=4*sp}
+const r=sched(cur,t0,m);pl={m,next:t0+r.len,ps:[{t0,st:r.st}]};$('#pb').textContent='■ Durdur';
+pl.iv=setInterval(()=>{if($('#lp').checked&&AC.currentTime>pl.next-.4){const q=sched(cur,pl.next,m);pl.ps.push({t0:pl.next,st:q.st});pl.next+=q.len;if(pl.ps.length>3)pl.ps.shift()}},80);
+let last=-1;const els=[...document.querySelectorAll('.hl')];
+const tick=()=>{if(!pl)return;const now=hn();if(!$('#lp').checked&&now>pl.next){stop();return}let ps=null;for(const p of pl.ps)if(p.t0<=now)ps=p;
+if(ps){let s=null;for(const x of ps.st){if(x.t<=now)s=x;else break}if(s&&s.g!=last){if(last>=0&&els[last])els[last].classList.remove('on');els[s.g].classList.add('on');last=s.g}}pl.raf=requestAnimationFrame(tick)};pl.raf=requestAnimationFrame(tick)}
+$('#pb').onclick=play;
+function vrs(){const e=$('#vr');e.innerHTML='<span>Varyasyon:</span>';for(let k=0;k<cur.nv;k++){const b=document.createElement('button');b.type='button';b.textContent=k+1;b.setAttribute('aria-pressed',k==cur.vi);b.onclick=()=>nw(sc,ln,k);e.appendChild(b)}$('#nw').textContent='↻ Varyasyon '+(cur.vi+1)+'/'+cur.nv}
+function show(){stop();$('#tt').textContent=cur.t;$('#nt').innerHTML='<b>Odak:</b> '+cur.f;$('#ny').innerHTML='<b>Yap:</b> '+cur.y;$('#sv').innerHTML=draw(cur);bpm.value=cur.bpm;sh();vrs();
+document.querySelectorAll('#ls button').forEach((b,j)=>b.setAttribute('aria-current',j==ln))}
+function lst(){const e=$('#ls');e.innerHTML='';SD[sc].forEach((l,i)=>{const b=document.createElement('button');b.type='button';b.textContent=sc+'.'+(i+1)+' '+l[0];b.onclick=()=>nw(sc,i,0);e.appendChild(b)})}
+SC.forEach((n,i)=>{const b=document.createElement('button');b.type='button';b.textContent=i+'. '+n;b.disabled=false;b.onclick=()=>nw(i,0,0);$('#sc').appendChild(b)});
+$('#nw').onclick=()=>nw(sc,ln,(cur.vi+1)%cur.nv);$('#bk').onclick=()=>history.back();
+function go(){const m=/^s(\d)l(\d+)-(\d+)$/.exec(location.hash.slice(1));if(!m||+m[1]>=SD.length||+m[2]<1||+m[2]>SD[+m[1]].length){nw(0,0,0,1);return}
+sc=+m[1];ln=m[2]-1;cur=gen(ln,+m[3]);lst();document.querySelectorAll('#sc button').forEach((b,j)=>b.setAttribute('aria-pressed',j==sc));show()}
+function nw(s,i,sd,rep){history[rep?'replaceState':'pushState'](null,'','#s'+s+'l'+(i+1)+'-'+sd);go()}
+addEventListener('popstate',go);addEventListener('hashchange',go);go();
+</script></body></html>
