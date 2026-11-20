@@ -33,18 +33,49 @@ svg{display:block;width:100%;margin:8px 0 10px}
 #pb{background:var(--acc)!important;color:var(--btn)!important}
 button:focus-visible,input:focus-visible{outline:3px solid var(--on);outline-offset:2px}
 .vr{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:8px 0 0;font-size:.88rem;color:var(--mut)}.vr button{font:inherit;min-width:34px;height:34px;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:8px;cursor:pointer}.vr button[aria-pressed=true]{background:var(--acc);color:var(--btn);border-color:var(--acc);font-weight:600}
+.tabs button.c{border-style:dashed}
+#ed{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:12px;margin-bottom:14px}#ed[hidden]{display:none}
+#ed .hd{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:6px}
+#ed .hd input{font:inherit;padding:7px 9px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink);width:min(260px,100%);min-width:0}
+#ed .hd button{font:inherit;font-size:.9rem;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:8px;padding:7px 12px;cursor:pointer}
+#ed .hi{font-size:.85rem;color:var(--mut);margin:0 0 6px}
+#ed details{border-top:1px solid var(--line);padding:2px 0}#ed summary{cursor:pointer;padding:8px 0;font-weight:600;font-size:.92rem}
+#ed label{display:flex;gap:8px;align-items:center;padding:5px 4px;font-size:.9rem;min-height:32px}
+#ls .r{display:flex;align-items:center;gap:2px}#ls .r>button:first-child{flex:1;min-width:0}#ls .r button.m{width:auto;flex:none;padding:8px 10px;font-size:.8rem;color:var(--mut);border:1px solid var(--line);margin-left:2px}#ls .r button.m:disabled{opacity:.3;cursor:default}
+#pp{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:12px;margin-bottom:14px}#pp[hidden]{display:none}
+#pp .hd{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:6px}
+#pp .hd button{font:inherit;font-size:.9rem;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:8px;padding:8px 12px;cursor:pointer}
+#pp .hd button.go{background:var(--acc);color:var(--btn);border-color:var(--acc);font-weight:600}
+#pp .hi{font-size:.85rem;color:var(--mut);margin:0 0 6px}
+#pp .ex{border-top:1px solid var(--line);padding:7px 0}#pp .ex b{font-size:.92rem}
+#pp .vs{display:flex;flex-wrap:wrap;gap:2px 16px;margin-top:2px}#pp label{display:flex;gap:6px;align-items:center;font-size:.9rem;min-height:34px}
+#pr{display:none}
+@media print{
+:root,:root:not([data-theme="light"]),:root[data-theme="dark"]{--bg:#fff!important;--card:#fff!important;--ink:#000!important;--mut:#444!important;--line:#bbb!important;--acc:#000!important;--on:transparent!important;color-scheme:light!important;padding:0!important}
+@page{margin:14mm}
+body{background:#fff;color:#000}body::before{display:none}body>main{display:none}#pr{display:block}
+.pt{width:100%;border-collapse:collapse}.pt thead{display:table-header-group}.pt td{padding:0}.pt tr{break-inside:avoid}
+.ph{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;border-bottom:1px solid #999;padding-bottom:4px;margin-bottom:10px}
+.ph .nm{font-size:.85rem;font-weight:700}.lw{display:flex;flex-direction:column;align-items:flex-end;gap:2px;max-width:115mm}
+.lg{display:flex;flex-wrap:wrap;gap:0 7px;justify-content:flex-end}.li{display:flex;flex-direction:column;align-items:center;font-size:.58rem;line-height:1.05;font-style:normal}
+.li svg{width:24px;height:31px;margin:0!important}.lt{font-size:.58rem;color:#333;text-align:right;line-height:1.25}
+.pb{break-inside:avoid;margin:0 0 16px;padding-bottom:6px;border-bottom:1px solid #ccc}
+.pb h2{font-size:1rem;margin:0 0 3px}.pb h2 small{font-weight:400;color:#444}.pb p{margin:1px 0;font-size:.85rem}#pr svg{margin:6px 0 0}}
+.vr button.w{padding:0 10px;min-width:0}
 .k{color:var(--mut);font-size:.82rem;margin-top:10px}
 </style></head><body><main>
 <h1>Bateri programı</h1>
 <div class="tabs" id="sc"></div>
+<div id="ed" hidden></div><div id="pp" hidden></div>
 <div class="g"><div id="ls"></div>
-<div id="pl"><h2 id="tt"></h2><p id="nt"></p><p id="ny"></p><div class="vr" id="vr"></div><div id="sv"></div>
+<div id="pl"><h2 id="tt"></h2><p id="nt"></p><p id="ny"></p><div class="vr" id="vr"></div><div class="vr" id="ad"></div><div id="sv"></div>
 <div class="ct"><button id="pb" type="button">▶ Çal</button><button id="nw" type="button">↻ Varyasyon</button><button id="bk" type="button">◀ Önceki</button>
 <label>Tempo <input id="bpm" type="range" min="40" max="140" value="60"><output id="bo"></output></label>
 <label><input id="hf" type="checkbox"> Yarım hız</label><label><input id="lp" type="checkbox" checked> Döngü</label>
 <label><input id="ck" type="checkbox" checked> Tık</label><label><input id="ci" type="checkbox"> Sayım</label></div>
 <p class="k">x = hi-hat/ride/crash, dolu nota = snare, tom, kick (en altta); üst sesler eller, alt sesler ayaklar. R/L = sağ/sol el. Ses tarayıcıda üretilir, gerçek davul kaydı değildir.</p></div></div>
 </main>
+<div id="pr"></div>
 <script>
 const SC=['El tekniği: rebound, single/double, buzz, paradiddle','Temelleri öğren ve hemen çalmaya başla','Kitte rahatça dolaş','Şarkıları çalmak için beceriler','Kontrolü kaybetmeden hızlan','Groove’unu genişlet','PAS 40 uluslararası rudiment'];
 const P=s=>s.split(';').map(b=>Object.fromEntries(b.split('|').map(r=>{const i=r.indexOf(':');return[r.slice(0,i),r.slice(i+1).split(' ')]})));
@@ -309,7 +340,12 @@ RU('Single ratamacue','ilk vuruşu drag, dördüncüsü vurgulu.','llR L R L> . 
 RU('Double ratamacue','tek ratamacue’dan önce bir drag daha.','llR rrL R L R> . . .'),
 RU('Triple ratamacue','tek ratamacue’dan önce iki drag daha.','llR rrL llR rrL R L R> .')];
 return L})();
-const SD=[L0,L1,L2,L3,L4,L5,L6];
+SC.push('Görselden eklenenler');
+const L7=[
+['R-L-K paterni (görselden)','sağ el sekizlik hi-hat’te, sol el snare’de, ayak kick’te; 16’lık sayım (1 e + a).','Önce sağ elle sekizlikleri sayarak oturt, sonra sol eli, en son kick’i ekle.',
+['HH:x . x . x . x . x . x . x . x .|S:. . . . S . . . . . . . S . S S|K:K . . . . . . K K . K . . . . .|l:R . R . RL . R . R . R . RL . RL L']]
+];
+const SD=[L0,L1,L2,L3,L4,L5,L6,L7];
 const $=s=>document.querySelector(s),SP=6,XS={4:46,6:36,8:30,12:22,16:17},CN={4:'1 2 3 4',6:'1 la li 2 la li',12:'1 la li 2 la li 3 la li 4 la li',8:'1 & 2 & 3 & 4 &',16:'1 e & a 2 e & a 3 e & a 4 e & a'};
 const ST={HH:9,Rd:8,C:10,T1:7,T2:6,S:5,FT:3,K:1,F:-1},UP=['HH','Rd','C','T1','T2','S','FT'],DN=['K','F'],XH={HH:1,Rd:1,C:1,F:1};
 let ln=0,sc=0,cur=null,AC,NB,pl=null;const bpm=$('#bpm'),eb=()=>bpm.value*($('#hf').checked?.5:1);
@@ -363,14 +399,63 @@ let last=-1;const els=[...document.querySelectorAll('.hl')];
 const tick=()=>{if(!pl)return;const now=hn();if(!$('#lp').checked&&now>pl.next){stop();return}let ps=null;for(const p of pl.ps)if(p.t0<=now)ps=p;
 if(ps){let s=null;for(const x of ps.st){if(x.t<=now)s=x;else break}if(s&&s.g!=last){if(last>=0&&els[last])els[last].classList.remove('on');els[s.g].classList.add('on');last=s.g}}pl.raf=requestAnimationFrame(tick)};pl.raf=requestAnimationFrame(tick)}
 $('#pb').onclick=play;
-function vrs(){const e=$('#vr');e.innerHTML='<span>Varyasyon:</span>';for(let k=0;k<cur.nv;k++){const b=document.createElement('button');b.type='button';b.textContent=k+1;b.setAttribute('aria-pressed',k==cur.vi);b.onclick=()=>nw(sc,ln,k);e.appendChild(b)}$('#nw').textContent='↻ Varyasyon '+(cur.vi+1)+'/'+cur.nv}
-function show(){stop();$('#tt').textContent=cur.t;$('#nt').innerHTML='<b>Odak:</b> '+cur.f;$('#ny').innerHTML='<b>Yap:</b> '+cur.y;$('#sv').innerHTML=draw(cur);bpm.value=cur.bpm;sh();vrs();
-document.querySelectorAll('#ls button').forEach((b,j)=>b.setAttribute('aria-current',j==ln))}
-function lst(){const e=$('#ls');e.innerHTML='';SD[sc].forEach((l,i)=>{const b=document.createElement('button');b.type='button';b.textContent=sc+'.'+(i+1)+' '+l[0];b.onclick=()=>nw(sc,i,0);e.appendChild(b)})}
-SC.forEach((n,i)=>{const b=document.createElement('button');b.type='button';b.textContent=i+'. '+n;b.disabled=false;b.onclick=()=>nw(i,0,0);$('#sc').appendChild(b)});
-$('#nw').onclick=()=>nw(sc,ln,(cur.vi+1)%cur.nv);$('#bk').onclick=()=>history.back();
-function go(){const m=/^s(\d)l(\d+)-(\d+)$/.exec(location.hash.slice(1));if(!m||+m[1]>=SD.length||+m[2]<1||+m[2]>SD[+m[1]].length){nw(0,0,0,1);return}
-sc=+m[1];ln=m[2]-1;cur=gen(ln,+m[3]);lst();document.querySelectorAll('#sc button').forEach((b,j)=>b.setAttribute('aria-pressed',j==sc));show()}
-function nw(s,i,sd,rep){history[rep?'replaceState':'pushState'](null,'','#s'+s+'l'+(i+1)+'-'+sd);go()}
+function vrs(){const e=$('#vr');e.innerHTML='<span>Varyasyon:</span>';for(let k=0;k<cur.nv;k++){const b=document.createElement('button');b.type='button';b.textContent=k+1;b.setAttribute('aria-pressed',k==cur.vi);b.onclick=()=>nw(sc,ln,k,0,ct);e.appendChild(b)}$('#nw').textContent='↻ Varyasyon '+(cur.vi+1)+'/'+cur.nv}
+function show(){stop();$('#tt').textContent=cur.t;$('#nt').innerHTML='<b>Odak:</b> '+cur.f;$('#ny').innerHTML='<b>Yap:</b> '+cur.y;$('#sv').innerHTML=draw(cur);bpm.value=cur.bpm;sh();vrs();}
+function lst(){const e=$('#ls');e.innerHTML='';const t=ct!=null?ft(ct):null;
+if(t&&!t.it.length){e.innerHTML='<p class="k" style="margin:8px">Bu sekme boş. Bir bölüme girip egzersizde “Çalışma sekmesi” satırından ekle.</p>';return}
+(t?t.it:SD[sc].map((_,i)=>[sc,i])).forEach(([s,i],k,arr)=>{const b=document.createElement('button');b.type='button';b.textContent=s+'.'+(i+1)+' '+SD[s][i][0];b.setAttribute('aria-current',s==sc&&i==ln);b.onclick=()=>nw(s,i,0,0,t?t.id:undefined);
+if(!t){e.appendChild(b);return}
+const r=document.createElement('div');r.className='r';r.appendChild(b);
+const mb=(x,lab,dis,fn)=>{const m=document.createElement('button');m.type='button';m.className='m';m.textContent=x;m.disabled=dis;m.setAttribute('aria-label',lab);m.onclick=fn;r.appendChild(m)};
+const mv=d=>()=>{const j=k+d;[t.it[k],t.it[j]]=[t.it[j],t.it[k]];sv();lst();pe()};
+mb('▲','Yukarı taşı',k==0,mv(-1));mb('▼','Aşağı taşı',k==arr.length-1,mv(1));mb('✕','Sekmeden çıkar',false,()=>tg(t,s,i,false));e.appendChild(r)})}
+$('#nw').onclick=()=>nw(sc,ln,(cur.vi+1)%cur.nv,0,ct);$('#bk').onclick=()=>history.back();
+let CT=(()=>{try{const d=JSON.parse(localStorage.getItem('bateriCT'));if(d&&Array.isArray(d.t)){d.n=d.n||1;d.t.forEach(t=>t.it=(t.it||[]).filter(x=>SD[x[0]]&&SD[x[0]][x[1]]).map(x=>[x[0],x[1],Array.isArray(x[2])?x[2]:[0]]));return d}}catch(e){}return{n:1,t:[]}})();
+let ct=null,em=false,pm=false;
+const sv=()=>{try{localStorage.setItem('bateriCT',JSON.stringify(CT))}catch(e){}},ft=id=>CT.t.find(t=>t.id==id),has=(t,s,l)=>t.it.some(x=>x[0]==s&&x[1]==l);
+function tg(t,s,l,on){const i=t.it.findIndex(x=>x[0]==s&&x[1]==l);if(on&&i<0)t.it.push([s,l,[0]]);if(!on&&i>=0)t.it.splice(i,1);sv();rt();if(ct==t.id)lst();rd();pe()}
+function rt(){const e=$('#sc');e.innerHTML='';const add=(x,p,fn,c)=>{const b=document.createElement('button');b.type='button';b.textContent=x;b.setAttribute('aria-pressed',p);if(c)b.className=c;b.onclick=fn;e.appendChild(b)};
+SC.forEach((n,i)=>add(i+'. '+n,ct==null&&i==sc,()=>nw(i,0,0)));
+CT.t.forEach(t=>add('★ '+t.name+' ('+t.it.length+')',ct==t.id,()=>ot(t.id),'c'));
+add('＋ Yeni sekme',false,()=>nt(),'c');
+if(ct!=null){add('✎ Ad / Sil',em,()=>{em=!em;ed()},'c');add('⬇ PDF',pm,()=>{pm=!pm;pe()},'c')}}
+function ot(id){const t=ft(id);ct=id;em=false;if(t.it.length)nw(t.it[0][0],t.it[0][1],0,0,id);else{em=true;lst();rt();ed();pe();rd()}}
+function nt(init){const id=CT.n++;CT.t.push({id,name:'Çalışma '+(CT.t.length+1),it:init?[[sc,ln,[cur.vi||0]]]:[]});sv();ct=id;em=true;if(init)nw(sc,ln,cur.vi,1,id);else{lst();rt();ed(1);rd()}}
+function ed(f){const e=$('#ed'),t=ct!=null&&ft(ct);if(!t||!em){e.hidden=true;e.innerHTML='';return}e.hidden=false;e.innerHTML='';
+const mk=(x,fn)=>{const b=document.createElement('button');b.type='button';b.textContent=x;b.onclick=fn;return b};
+const h=document.createElement('div');h.className='hd';const inp=document.createElement('input');inp.type='text';inp.value=t.name;inp.maxLength=40;inp.setAttribute('aria-label','Sekme adı');
+inp.oninput=()=>{t.name=inp.value.trim()||'Adsız';sv();rt();rd()};
+h.append(inp,mk('Sekmeyi sil',()=>{if(confirm('“'+t.name+'” sekmesi silinsin mi?')){CT.t=CT.t.filter(x=>x!=t);sv();ct=null;em=false;nw(sc,ln,cur.vi,1)}}),mk('Kapat',()=>{em=false;rt();ed()}));e.appendChild(h);
+const hi=document.createElement('p');hi.className='hi';hi.textContent='Bölümlere girip her egzersizde “Çalışma sekmesi” satırından bu sekmeye ekle. Sırayı soldaki listeden ▲ ▼ ile değiştir, ✕ ile çıkar.';e.appendChild(hi);
+if(f)inp.select()}
+function rd(){const e=$('#ad');if(!cur)return;e.innerHTML='<span>Çalışma sekmesi:</span>';
+const mb=(x,p,fn)=>{const b=document.createElement('button');b.type='button';b.className='w';b.textContent=x;if(p!==null)b.setAttribute('aria-pressed',p);b.onclick=fn;e.appendChild(b)};
+CT.t.forEach(t=>{const on=has(t,sc,ln);mb((on?'✓ ':'＋ ')+t.name,on,()=>tg(t,sc,ln,!has(t,sc,ln)))});mb('＋ Yeni sekme',null,()=>nt(1))}
+const nv=(s,l)=>{const p=SD[s][l][3];return Array.isArray(p)?p.length:1},gx=(s,l,v)=>{const o=sc;sc=s;try{return gen(l,v)}finally{sc=o}};
+function pe(){const e=$('#pp'),t=ct!=null&&ft(ct);if(!t||!pm){e.hidden=true;e.innerHTML='';return}e.hidden=false;e.innerHTML='';
+const mk=(x,fn,c)=>{const b=document.createElement('button');b.type='button';b.textContent=x;b.onclick=fn;if(c)b.className=c;return b};
+const h=document.createElement('div');h.className='hd';
+h.append(mk('⬇ PDF oluştur',pdf,'go'),mk('Tüm varyasyonları seç',()=>{t.it.forEach(x=>x[2]=Array.from({length:nv(x[0],x[1])},(_,k)=>k));sv();pe()}),mk('Seçimi temizle',()=>{t.it.forEach(x=>x[2]=[]);sv();pe()}),mk('Kapat',()=>{pm=false;rt();pe()}));e.appendChild(h);
+const hi=document.createElement('p');hi.className='hi';hi.textContent='PDF’e girecek egzersizleri ve varyasyonları işaretle. Açılan yazdırma penceresinde hedef olarak “PDF olarak kaydet”i seç.';e.appendChild(hi);
+if(!t.it.length){hi.textContent='Bu sekmede egzersiz yok.';return}
+t.it.forEach(x=>{const[s,l]=x,n=nv(s,l),d=document.createElement('div');d.className='ex';const b=document.createElement('b');b.textContent=s+'.'+(l+1)+' '+SD[s][l][0];d.appendChild(b);
+const vs=document.createElement('div');vs.className='vs';
+for(let v=0;v<n;v++){const lb=document.createElement('label'),c=document.createElement('input');c.type='checkbox';c.checked=x[2].includes(v);c.onchange=()=>{x[2]=c.checked?[...x[2],v].sort((a,b)=>a-b):x[2].filter(z=>z!=v);sv()};lb.append(c,n>1?'Varyasyon '+(v+1):'Notasyon');vs.appendChild(lb)}
+d.appendChild(vs);e.appendChild(d)})}
+function pdf(){const t=ft(ct);if(!t)return;let h='',n=0;
+const us=new Set(),tk=new Set();let hl=0;
+t.it.forEach(([s,l,vs])=>{const N=nv(s,l);vs.forEach(v=>{const ex=gx(s,l,v);n++;h+='<tr><td><section class="pb"><h2>'+ex.t+(N>1?' <small>· Varyasyon '+(v+1)+'/'+N+'</small>':'')+'</h2><p><b>Odak:</b> '+ex.f+'</p><p><b>Yap:</b> '+ex.y+'</p>'+draw(ex)+'</section></td></tr>';ex.bars.forEach(b=>{for(const i in b){if(i=='l'){hl=1;continue}b[i].forEach(k=>{if(k!='.'){us.add(i);tk.add(k)}})}})})});
+if(!n){alert('Önce en az bir egzersiz / varyasyon işaretle.');return}
+if(pl)stop();const NM={HH:'Hi-hat',Rd:'Ride',C:'Crash',T1:'Tom 1',T2:'Tom 2',S:'Snare',FT:'Floor tom',K:'Kick',F:'Ayak hi-hat'},ic=i=>{const y=21-ST[i]*1.5;let g='';for(let k=0;k<5;k++)g+='<path d="M0,'+(21-3*k)+' H22" stroke="currentColor" stroke-width=".5"/>';
+g+=XH[i]?'<path d="M8,'+(y-2.4)+' l6,4.8 M8,'+(y+2.4)+' l6,-4.8" stroke="currentColor" stroke-width="1.1"/>':'<ellipse cx="11" cy="'+y+'" rx="3.3" ry="2.3" transform="rotate(-20 11 '+y+')" fill="currentColor"/>';if(i=='C')g+='<path d="M5,'+y+' h12" stroke="currentColor" stroke-width=".6"/>';return'<svg viewBox="0 0 22 28">'+g+'</svg>'};
+const MK={O:'o = açık hi-hat',B:'◆ = ride çan',g:'( ) = hayalet nota',r:'> = vurgu',A:'> = vurgu',z:'/// = buzz',c:'x daire içinde = cross-stick',f:'flam',d:'drag'};
+let lg='';['C','HH','Rd','T1','T2','S','FT','K','F'].forEach(i=>{if(us.has(i))lg+='<i class="li">'+ic(i)+NM[i]+'</i>'});
+const mt=[...new Set(Object.keys(MK).filter(k=>tk.has(k)).map(k=>MK[k]))];if(hl)mt.push('R/L = sağ/sol el');
+const pr=$('#pr');pr.innerHTML='<table class="pt"><thead><tr><td><div class="ph"><span class="nm"></span><div class="lw"><div class="lg">'+lg+'</div>'+(mt.length?'<div class="lt">'+mt.join(' · ')+'</div>':'')+'</div></div></td></tr></thead><tbody>'+h+'</tbody></table>';pr.querySelector('.nm').textContent=t.name;
+const T=document.title;document.title='Bateri - '+t.name;addEventListener('afterprint',()=>{document.title=T},{once:true});window.print()}
+function go(){const m=/^(?:c(\d+))?s(\d)l(\d+)-(\d+)$/.exec(location.hash.slice(1));if(!m||+m[2]>=SD.length||+m[3]<1||+m[3]>SD[+m[2]].length){nw(0,0,0,1);return}
+ct=m[1]&&ft(+m[1])?+m[1]:null;if(ct==null)em=pm=false;
+sc=+m[2];ln=m[3]-1;cur=gen(ln,+m[4]);lst();rt();show();ed();pe();rd()}
+function nw(s,i,sd,rep,c){history[rep?'replaceState':'pushState'](null,'','#'+(c!=null?'c'+c:'')+'s'+s+'l'+(i+1)+'-'+sd);go()}
 addEventListener('popstate',go);addEventListener('hashchange',go);go();
 </script></body></html>
